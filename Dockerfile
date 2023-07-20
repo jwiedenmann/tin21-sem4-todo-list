@@ -10,7 +10,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
 COPY . .
 RUN dotnet restore
 
-WORKDIR /app/Pyco.Todo
+WORKDIR /app/src/Pyco.Todo
 RUN npm install && npm run build
 RUN dotnet publish -c release -o /out --no-restore
 
