@@ -5,6 +5,7 @@
 
 # Custom
 *.bkp
+*.dtmp
 .DS_Store
 dist/
 wwwroot/
