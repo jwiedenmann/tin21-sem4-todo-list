@@ -9,6 +9,7 @@ import About from '../components/About.vue';
 import SignIn from '../components/SignIn.vue';
 import SignUp from '../components/SignUp.vue';
 import Profile from '../components/Profile.vue';
+import ListOverview from '../components/ListOverview/index.vue';
 import Admin from '../components/Admin/index.vue';
 
 export enum Routes {
@@ -17,6 +18,7 @@ export enum Routes {
   SignIn = '/signin',
   SignUp = '/signup',
   Profile = '/profile',
+  ListOverview = '/lists',
   Admin = '/admin',
   Forbidden = '/forbidden',
 }
@@ -51,6 +53,7 @@ const routes = [
   { path: Routes.SignIn, component: SignIn },
   { path: Routes.SignUp, component: SignUp },
   { path: Routes.Profile, component: Profile, beforeEnter: requiresAuth },
+  { path: Routes.ListOverview, component: ListOverview, beforeEnter: requiresAuth },
   { path: Routes.Admin, component: Admin, beforeEnter: requiresRole('Admin') },
   { path: Routes.Forbidden, component: Forbidden },
   { path: '*', redirect: '/' },

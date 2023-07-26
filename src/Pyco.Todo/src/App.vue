@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <router-link class="navbar-brand" to="/" exact>
-                <span class="align-middle">Pyco.Todo</span>
+                <span class="align-middle" id="PycoLogo">Pyco.Todo</span>
             </router-link>
             <navbar :items="navItems" :attributes="store.userAttributes" />
         </div>
@@ -22,10 +22,11 @@ import { bus, store } from './shared';
 
 const navItems = [
   { "href":"/",         "label": "Home",     "exact":true },
-  { "href":"/about",    "label": "About" },
   { "href":"/signin",   "label": "Sign In",  "hide":"auth" },
-  { "href":"/profile",  "label": "Profile",  "show":"auth" },
-  { "href":"/admin",    "label": "Admin",    "show":"role:Admin" }
+  { "href": "/profile", "label": "Profile", "show": "auth" },
+  { "href": "/lists", "label": "My Todos", "show": "auth" },
+  { "href": "/admin", "label": "Admin", "show": "role:Admin" },
+  { "href": "/about", "label": "About" }
 ]
 
 @Component

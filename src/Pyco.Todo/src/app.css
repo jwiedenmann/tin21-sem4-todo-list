@@ -4,7 +4,7 @@
 }
 .navbar {
     border-radius: 0;
-    background: #41B883 !important;
+    background: #9100F4 !important;
 }
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
@@ -14,6 +14,10 @@
 }
 a {
     color: #35495E;
+}
+#PycoLogo {
+    color: #FC7A1E;
+    font-weight: bold;
 }
 .nav-button-group {
     display: flex;
