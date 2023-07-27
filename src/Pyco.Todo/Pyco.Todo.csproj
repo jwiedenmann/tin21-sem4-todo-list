@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="src\components\ListDetail\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 
