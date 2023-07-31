@@ -11,7 +11,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
  && echo "npm version: $(npm --version)" \
  && rm -rf /var/lib/apt/lists/*
 
-COPY backend .
+COPY app/backend .
 RUN dotnet restore
 RUN dotnet build -c Release
 RUN dotnet publish -c Release -o /dist
@@ -23,11 +23,11 @@ FROM node:alpine as buildvue
 
 WORKDIR /src
 
-COPY frontend/package.json .
+COPY app/frontend/package.json .
 RUN npm install
 
 # webpack build
-COPY frontend .
+COPY app/frontend .
 RUN npm run build
 
 #

@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: ./
-      dockerfile: ./docker/app/Dockerfile
+      dockerfile: ./app/Dockerfile
     ports:
       - "8080:80"
     links:
@@ -13,7 +13,7 @@ services:
   tododb:
     build:
       context: ./
-      dockerfile: ./docker/db/Dockerfile
+      dockerfile: ./db/Dockerfile
     hostname: postgres
     ports:
       - 5432:5432
@@ -31,5 +31,3 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@developer-blog.net
       PGADMIN_DEFAULT_PASSWORD: admin123
-
-  
