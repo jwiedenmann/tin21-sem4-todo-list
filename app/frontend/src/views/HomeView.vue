@@ -1,6 +1,14 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
+    <br>
+    <button class="btn btn-primary" data-bs-target="#collapseTarget" data-bs-toggle="collapse">
+      Bootstrap collapse
+    </button>
+    <div class="collapse py-2" id="collapseTarget">
+      This is the toggle-able content!
+    </div>
+    <br>
     <h2>{{ users }}</h2>
     <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
