@@ -5,7 +5,7 @@ services:
       context: ./
       dockerfile: ./app/Dockerfile
     ports:
-      - "8080:80"
+      - "5000:5000"
     links:
       - tododb
     depends_on:

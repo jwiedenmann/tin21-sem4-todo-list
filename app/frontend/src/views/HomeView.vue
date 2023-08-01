@@ -8,6 +8,7 @@
 
 <script>
 // @ is an alias to /src
+import { inject } from 'vue'
 import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
@@ -21,15 +22,15 @@ export default {
     };
   },
   async mounted() {
-    const { data } = await this.axios.get(
-      "https://localhost:7098/api/v1/Test"
-    ).then((r) => {
-      console.log(r.data);
-      this.albero = r.data;
-    }).catch((e) => {
-      console.log(e);
-    });;
-    this.users = data;
+    const axios = inject('axios');
+    axios
+      .get("https://localhost:7098/api/v1/Test")
+      .then((response) => {
+        this.users = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 </script>
