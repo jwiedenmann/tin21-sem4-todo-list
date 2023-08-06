@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pyco.Todo.Data", "Pyco.Todo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pyco.Todo.DataAccess", "Pyco.Todo.DataAccess\Pyco.Todo.DataAccess.csproj", "{CFC883E3-41E4-429C-B309-8839C4195062}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pyco.Todo.Core", "Pyco.Todo.Core\Pyco.Todo.Core.csproj", "{A410D930-A059-4B8D-8BAC-8C7505D0C397}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CFC883E3-41E4-429C-B309-8839C4195062}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFC883E3-41E4-429C-B309-8839C4195062}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFC883E3-41E4-429C-B309-8839C4195062}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A410D930-A059-4B8D-8BAC-8C7505D0C397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A410D930-A059-4B8D-8BAC-8C7505D0C397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A410D930-A059-4B8D-8BAC-8C7505D0C397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A410D930-A059-4B8D-8BAC-8C7505D0C397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
