@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS ListItem;
 DROP TABLE IF EXISTS ListItemType;
 DROP TABLE IF EXISTS ListUser;
 DROP TABLE IF EXISTS List;
+DROP TABLE IF EXISTS RefreshTokens;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS "role";
 
@@ -37,6 +38,13 @@ CREATE TABLE "user"(
     email varchar(100) NOT NULL UNIQUE,
     archive boolean NOT NULL DEFAULT false,
     creationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE RefreshTokens(
+    userId SERIAL PRIMARY KEY REFERENCES "user"(id),
+    token varchar(100) NOT NULL,
+    expires timestamp NOT NULL,
+    created timestamp NOT NULL
 );
 
 CREATE TABLE ListItemCheck(
