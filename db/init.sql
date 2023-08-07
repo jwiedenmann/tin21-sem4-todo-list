@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS ListItem;
 DROP TABLE IF EXISTS ListItemType;
 DROP TABLE IF EXISTS ListUser;
 DROP TABLE IF EXISTS List;
-DROP TABLE IF EXISTS RefreshTokens;
+DROP TABLE IF EXISTS RefreshToken;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS "role";
 
@@ -40,7 +40,7 @@ CREATE TABLE "user"(
     creationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE RefreshTokens(
+CREATE TABLE RefreshToken(
     userId SERIAL PRIMARY KEY REFERENCES "user"(id),
     token varchar(100) NOT NULL,
     expires timestamp NOT NULL,
