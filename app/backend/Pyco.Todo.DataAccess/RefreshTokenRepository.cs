@@ -11,7 +11,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
     public RefreshTokenRepository(IConfiguration configuration)
     {
-        _connectionstring = configuration.GetConnectionString("PycoDb");
+        _connectionstring = configuration.GetConnectionString("TodoDb");
     }
 
     public Task<RefreshToken?> GetAsync(int userId)

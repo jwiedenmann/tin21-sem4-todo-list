@@ -11,7 +11,7 @@ public class UserRepository : IUserRepository
 
     public UserRepository(IConfiguration configuration)
     {
-        _connectionstring = configuration.GetConnectionString("PycoDb");
+        _connectionstring = configuration.GetConnectionString("TodoDb");
     }
 
     public Task<IEnumerable<User>> GetAsync()
