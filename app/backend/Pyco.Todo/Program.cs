@@ -1,4 +1,6 @@
-using Pyco.Todo.Jwt;
+using Pyco.Todo;
+using Pyco.Todo.Core.Authorization;
+using Pyco.Todo.Core.Exception;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,11 +23,7 @@ builder.Services.AddCors(options =>
 });
 #endif
 
-var jwtOptions = builder.Configuration
-    .GetSection("JwtOptions")
-    .Get<JwtOptions>();
-
-builder.Services.AddSingleton(jwtOptions);
+builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -61,6 +59,10 @@ app.UseAuthorization();
 // app.UseSession();
 // app.UseResponseCompression();
 // app.UseResponseCaching();
+
+// custom middleware
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<JwtMiddleware>();
 
 app.MapRazorPages();
 app.MapControllers();
