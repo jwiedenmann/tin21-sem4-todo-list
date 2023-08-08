@@ -14,7 +14,24 @@ public class UserRepository : IUserRepository
         _connectionstring = configuration.GetConnectionString("PycoDb");
     }
 
-    public Task<User> Get(string username)
+    public Task<IEnumerable<User>> GetAsync()
+    {
+        const string query = @"
+select
+    id,
+    username,
+    password,
+    email,
+    archive,
+    creationDate
+from user;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.QueryAsync<User>(query);
+    }
+
+    public Task<User?> GetAsync(string username)
     {
         const string query = @"
 select
@@ -25,10 +42,28 @@ select
     archive,
     creationDate
 from user
-where username = @username";
+where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstAsync<User>(query, new { username });
+        return connection.QueryFirstOrDefaultAsync<User?>(query, new { username });
+    }
+
+    public Task<User?> GetByTokenAsync(string token)
+    {
+        const string query = @"
+select
+    u.id,
+    u.username,
+    u.password,
+    u.email,
+    u.archive,
+    u.creationDate
+from user as u
+inner join refreshToken as r on r.token = @token;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.QueryFirstOrDefaultAsync<User?>(query, new { token });
     }
 }

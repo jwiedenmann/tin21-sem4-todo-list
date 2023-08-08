@@ -4,6 +4,8 @@ namespace Pyco.Todo.DataAccess
 {
     public interface IUserRepository
     {
-        Task<User> Get(string username);
+        Task<IEnumerable<User>> GetAsync();
+        Task<User?> GetAsync(string username);
+        Task<User?> GetByTokenAsync(string token);
     }
 }
