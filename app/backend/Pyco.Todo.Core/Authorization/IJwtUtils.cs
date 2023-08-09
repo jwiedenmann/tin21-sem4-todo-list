@@ -7,5 +7,5 @@ public interface IJwtUtils
 {
     public string GenerateJwtToken(User user);
     public IEnumerable<Claim>? ValidateJwtToken(string? token);
-    public RefreshToken GenerateRefreshToken();
+    public RefreshToken GenerateRefreshToken(int userId);
 }

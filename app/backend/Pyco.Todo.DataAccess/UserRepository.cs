@@ -14,7 +14,7 @@ public class UserRepository : IUserRepository
         _connectionstring = configuration.GetConnectionString("TodoDb");
     }
 
-    public Task<IEnumerable<User>> GetAsync()
+    public IEnumerable<User> Get()
     {
         const string query = @"
 select
@@ -28,10 +28,10 @@ from ""user"";";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryAsync<User>(query);
+        return connection.Query<User>(query);
     }
 
-    public Task<User?> GetAsync(string username)
+    public User? Get(string username)
     {
         const string query = @"
 select
@@ -46,10 +46,10 @@ where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefaultAsync<User?>(query, new { username });
+        return connection.QueryFirstOrDefault<User?>(query, new { username });
     }
 
-    public Task<User?> GetByTokenAsync(string token)
+    public User? GetByToken(string token)
     {
         const string query = @"
 select
@@ -64,10 +64,10 @@ inner join refreshToken as r on r.token = @token;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefaultAsync<User?>(query, new { token });
+        return connection.QueryFirstOrDefault<User?>(query, new { token });
     }
 
-    public async Task<bool> UsernameExistsAsync(string username)
+    public bool UsernameExists(string username)
     {
         const string query = @"
 select 1
@@ -76,10 +76,10 @@ where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return (await connection.QueryFirstOrDefaultAsync<int>(query, new { username })) != 0;
+        return (connection.QueryFirstOrDefault<int>(query, new { username })) != 0;
     }
 
-    public Task<int?> InsertAsync(User user)
+    public int? Insert(User user)
     {
         const string query = @"
 insert into ""user"" (username, password, email)
@@ -89,6 +89,6 @@ returning id;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefaultAsync<int?>(query, user);
+        return connection.QueryFirstOrDefault<int?>(query, user);
     }
 }

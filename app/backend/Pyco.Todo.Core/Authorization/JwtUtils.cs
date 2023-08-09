@@ -66,10 +66,11 @@ public class JwtUtils : IJwtUtils
         }
     }
 
-    public RefreshToken GenerateRefreshToken()
+    public RefreshToken GenerateRefreshToken(int userId)
     {
         var refreshToken = new RefreshToken
         {
+            UserId = userId,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.RefreshTokenExpirationMinutes),
             Created = DateTime.UtcNow
