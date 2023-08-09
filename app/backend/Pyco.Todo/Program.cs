@@ -67,6 +67,4 @@ app.UseMiddleware<JwtMiddleware>();
 app.MapRazorPages();
 app.MapControllers();
 
-//app.MapGet("/", () => "blub");
-
 app.Run();
