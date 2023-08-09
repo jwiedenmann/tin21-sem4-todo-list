@@ -60,7 +60,8 @@ select
     u.archive,
     u.creationDate
 from ""user"" as u
-inner join refreshToken as r on r.token = @token;";
+inner join refreshToken as r on r.userId = u.id
+where r.token = @token;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
