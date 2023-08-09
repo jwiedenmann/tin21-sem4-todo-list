@@ -2,7 +2,7 @@
 using Pyco.Todo.Core.Exception;
 using Pyco.Todo.Data.Models;
 using Pyco.Todo.Data.ViewModels;
-using Pyco.Todo.DataAccess;
+using Pyco.Todo.DataAccess.Interfaces;
 
 namespace Pyco.Todo.Core.Authorization;
 

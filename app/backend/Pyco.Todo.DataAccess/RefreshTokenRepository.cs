@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Pyco.Todo.Data.Models;
+using Pyco.Todo.DataAccess.Interfaces;
 
 namespace Pyco.Todo.DataAccess;
 

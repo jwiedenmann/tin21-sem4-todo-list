@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Data.Models;
-using Pyco.Todo.DataAccess;
+using Pyco.Todo.DataAccess.Interfaces;
 
 namespace WebApi.Controllers;
 

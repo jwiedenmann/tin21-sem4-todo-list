@@ -1,6 +1,7 @@
 ﻿using Pyco.Todo.Core.Authorization;
 using Pyco.Todo.Data.Jwt;
 using Pyco.Todo.DataAccess;
+using Pyco.Todo.DataAccess.Interfaces;
 
 namespace Pyco.Todo;
 

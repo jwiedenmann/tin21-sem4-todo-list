@@ -1,6 +1,6 @@
 ﻿using Pyco.Todo.Data.Models;
 
-namespace Pyco.Todo.DataAccess
+namespace Pyco.Todo.DataAccess.Interfaces
 {
     public interface IRefreshTokenRepository
     {

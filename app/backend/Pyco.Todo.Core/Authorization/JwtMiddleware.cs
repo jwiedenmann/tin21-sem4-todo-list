@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using Pyco.Todo.DataAccess;
+using Pyco.Todo.DataAccess.Interfaces;
 using System.Security.Claims;
 
 namespace Pyco.Todo.Core.Authorization;
