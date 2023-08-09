@@ -24,7 +24,7 @@ select
     email,
     archive,
     creationDate
-from user;";
+from ""user"";";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
@@ -41,7 +41,7 @@ select
     email,
     archive,
     creationDate
-from user
+from ""user""
 where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
@@ -59,7 +59,7 @@ select
     u.email,
     u.archive,
     u.creationDate
-from user as u
+from ""user"" as u
 inner join refreshToken as r on r.token = @token;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
@@ -71,7 +71,7 @@ inner join refreshToken as r on r.token = @token;";
     {
         const string query = @"
 select 1
-from user
+from ""user""
 where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
@@ -82,10 +82,10 @@ where username = @username;";
     public Task<int?> InsertAsync(User user)
     {
         const string query = @"
-insert into user (username, password, email)
+insert into ""user"" (username, password, email)
 values (@username, @password, @email)
-returning id
-on conflict (username) do nothing;";
+on conflict (username) do nothing
+returning id;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
