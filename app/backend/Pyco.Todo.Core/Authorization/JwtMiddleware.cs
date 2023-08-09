@@ -21,7 +21,7 @@ public class JwtMiddleware
 
         if (claims != null && username != null)
         {
-            context.Items["User"] = userRepository.GetAsync(username);
+            context.Items["User"] = userRepository.Get(username);
         }
 
         await _next(context);

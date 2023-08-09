@@ -24,21 +24,21 @@ public class UserController : ControllerBase
     //    => Ok(await _userRepository.GetAsync());
 
     [HttpGet]
-    public async Task<IActionResult> GetByUsername(string username)
-        => Ok(await _userRepository.GetAsync(username));
+    public IActionResult GetByUsername(string username)
+        => Ok(_userRepository.Get(username));
 
     [AllowAnonymous]
     [HttpGet("exists")]
-    public async Task<IActionResult> UsernameExists(string username)
-        => Ok(await _userRepository.UsernameExistsAsync(username));
+    public IActionResult UsernameExists(string username)
+        => Ok(_userRepository.UsernameExists(username));
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+    public IActionResult CreateUser(User user)
     {
         PasswordHasher hasher = new();
         user.Password = hasher.HashPassword(user.Password);
-        int? userId = await _userRepository.InsertAsync(user);
+        int? userId = _userRepository.Insert(user);
 
         return userId != null && userId > 0
             ? Ok()

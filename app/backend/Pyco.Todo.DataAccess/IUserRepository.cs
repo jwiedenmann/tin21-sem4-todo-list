@@ -4,14 +4,14 @@ namespace Pyco.Todo.DataAccess
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAsync();
-        Task<User?> GetAsync(string username);
-        Task<User?> GetByTokenAsync(string token);
-        Task<bool> UsernameExistsAsync(string username);
+        IEnumerable<User> Get();
+        User? Get(string username);
+        User? GetByToken(string token);
+        bool UsernameExists(string username);
         /// <summary>
         /// Inserts the user data into the database.
         /// </summary>
         /// <returns>The id of the created user.</returns>
-        Task<int?> InsertAsync(User user);
+        int? Insert(User user);
     }
 }

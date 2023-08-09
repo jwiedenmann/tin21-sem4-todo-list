@@ -4,8 +4,8 @@ namespace Pyco.Todo.DataAccess
 {
     public interface IRefreshTokenRepository
     {
-        Task<RefreshToken?> GetAsync(int userId);
-        Task<int> SetAsync(RefreshToken refreshToken);
-        Task<int> DeleteAsync(string token);
+        RefreshToken? Get(int userId);
+        int Set(RefreshToken refreshToken);
+        int Delete(string token);
     }
 }

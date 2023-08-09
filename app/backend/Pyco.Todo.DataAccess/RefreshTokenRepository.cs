@@ -14,7 +14,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         _connectionstring = configuration.GetConnectionString("TodoDb");
     }
 
-    public Task<RefreshToken?> GetAsync(int userId)
+    public RefreshToken? Get(int userId)
     {
         const string query = @"
 select
@@ -27,10 +27,10 @@ where userId = @userId;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefaultAsync<RefreshToken?>(query, new { userId });
+        return connection.QueryFirstOrDefault<RefreshToken?>(query, new { userId });
     }
 
-    public Task<int> SetAsync(RefreshToken refreshToken)
+    public int Set(RefreshToken refreshToken)
     {
         const string query = @"
 delete from refreshToken
@@ -41,10 +41,10 @@ values (@userId, @token, @expires, @created);";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.ExecuteAsync(query, refreshToken);
+        return connection.Execute(query, refreshToken);
     }
 
-    public Task<int> DeleteAsync(string token)
+    public int Delete(string token)
     {
         const string query = @"
 delete from refreshToken
@@ -52,6 +52,6 @@ where token = @token;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.ExecuteAsync(query, new { token });
+        return connection.Execute(query, new { token });
     }
 }

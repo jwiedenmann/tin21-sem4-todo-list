@@ -4,8 +4,8 @@ namespace Pyco.Todo.Core.Authorization
 {
     public interface IAuthenticationService
     {
-        Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
-        Task<AuthenticateResponse> RefreshToken(string token);
-        Task RevokeToken(string token);
+        AuthenticateResponse Authenticate(AuthenticateRequest model);
+        AuthenticateResponse RefreshToken(string token);
+        void RevokeToken(string token);
     }
 }

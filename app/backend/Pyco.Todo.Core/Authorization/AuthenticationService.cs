@@ -22,9 +22,9 @@ public class AuthenticationService : IAuthenticationService
         _refreshTokenRepository = refreshToken;
     }
 
-    public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
+    public AuthenticateResponse Authenticate(AuthenticateRequest model)
     {
-        User? user = await _userRepository.GetAsync(model.Username);
+        User? user = _userRepository.Get(model.Username);
         PasswordHasher passwordHasher = new();
 
         // validate
@@ -36,41 +36,41 @@ public class AuthenticationService : IAuthenticationService
 
         // authentication successful so generate jwt and refresh tokens
         string jwtToken = _jwtUtils.GenerateJwtToken(user);
-        RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken();
-        await _refreshTokenRepository.SetAsync(refreshToken);
+        RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(user.Id);
+        _refreshTokenRepository.Set(refreshToken);
 
         return new AuthenticateResponse(user, jwtToken, refreshToken.Token);
     }
 
-    public async Task<AuthenticateResponse> RefreshToken(string token)
+    public AuthenticateResponse RefreshToken(string token)
     {
-        User? user = await _userRepository.GetByTokenAsync(token);
-        RefreshToken? refreshToken = user != null ? await _refreshTokenRepository.GetAsync(user.Id) : null;
+        User? user = _userRepository.GetByToken(token);
+        RefreshToken? refreshToken = user != null ? _refreshTokenRepository.Get(user.Id) : null;
 
         if (user is null || (refreshToken?.IsExpired ?? true))
         {
             throw new UnauthorizedException("Invalid token");
         }
 
-        RefreshToken newRefreshToken = _jwtUtils.GenerateRefreshToken();
+        RefreshToken newRefreshToken = _jwtUtils.GenerateRefreshToken(user.Id);
         string newJwtToken = _jwtUtils.GenerateJwtToken(user);
 
         // replace token in db
-        await _refreshTokenRepository.SetAsync(newRefreshToken);
+        _refreshTokenRepository.Set(newRefreshToken);
 
         return new AuthenticateResponse(user, newJwtToken, newRefreshToken.Token);
     }
 
-    public async Task RevokeToken(string token)
+    public void RevokeToken(string token)
     {
-        User? user = await _userRepository.GetByTokenAsync(token);
-        RefreshToken? refreshToken = user != null ? await _refreshTokenRepository.GetAsync(user.Id) : null;
+        User? user = _userRepository.GetByToken(token);
+        RefreshToken? refreshToken = user != null ? _refreshTokenRepository.Get(user.Id) : null;
 
         if (refreshToken is null)
         {
             return;
         }
 
-        await _refreshTokenRepository.DeleteAsync(token);
+        _refreshTokenRepository.Delete(token);
     }
 }
