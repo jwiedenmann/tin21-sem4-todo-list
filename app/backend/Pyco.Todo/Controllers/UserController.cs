@@ -27,6 +27,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetByUsername(string username)
         => Ok(await _userRepository.GetAsync(username));
 
+    [AllowAnonymous]
     [HttpGet("exists")]
     public async Task<IActionResult> UsernameExists(string username)
         => Ok(await _userRepository.UsernameExistsAsync(username));
