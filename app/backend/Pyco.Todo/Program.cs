@@ -54,8 +54,8 @@ app.UseRouting();
 app.UseCors("_myAllowSpecificOrigins");
 #endif
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 // app.UseSession();
 // app.UseResponseCompression();
 // app.UseResponseCaching();
