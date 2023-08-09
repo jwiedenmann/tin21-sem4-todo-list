@@ -12,6 +12,15 @@ public class User
     public bool Archive { get; set; }
     public DateTime CreationDate { get; set; }
 
+    // realization of a property that is never serialized to json, but always deserialized
+#pragma warning disable IDE0051 // Remove unused private members
+    [JsonPropertyName(nameof(Password))]
+    public string PasswordSetter
+    {
+        set => Password = value;
+    }
+#pragma warning restore IDE0051 // Remove unused private members
+
     [JsonIgnore]
     public RefreshToken? RefreshToken { get; set; }
 }
