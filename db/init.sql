@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS ListItem;
 DROP TABLE IF EXISTS ListItemType;
 DROP TABLE IF EXISTS ListUser;
 DROP TABLE IF EXISTS List;
-DROP TABLE IF EXISTS RefreshTokens;
+DROP TABLE IF EXISTS RefreshToken;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS "role";
 
@@ -40,7 +40,7 @@ CREATE TABLE "user"(
     creationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE RefreshTokens(
+CREATE TABLE RefreshToken(
     userId SERIAL PRIMARY KEY REFERENCES "user"(id),
     token varchar(100) NOT NULL,
     expires timestamp NOT NULL,
@@ -78,14 +78,15 @@ INSERT INTO "role"(title) VALUES ('List Admin');
 INSERT INTO "role"(title) VALUES ('List User');
 --
 
+-- password is test
 INSERT INTO "user" (username, password, email)
-    VALUES ('user1', '1234', 'user1@test.com');
+    VALUES ('user1', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user1@test.com');
 INSERT INTO "user" (username, password, email)
-    VALUES ('user2', '1234', 'user2@test.com');  
+    VALUES ('user2', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user2@test.com');  
 INSERT INTO "user" (username, password, email)
-    VALUES ('user3', '1234', 'user3@test.com');  
+    VALUES ('user3', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user3@test.com');  
 INSERT INTO "user" (username, password, email)
-    VALUES ('user4', '1234', 'user4@test.com');            
+    VALUES ('user4', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user4@test.com');            
 
 INSERT INTO List (title)
     VALUES ('TestList');
