@@ -78,14 +78,15 @@ INSERT INTO "role"(title) VALUES ('List Admin');
 INSERT INTO "role"(title) VALUES ('List User');
 --
 
+-- password is test
 INSERT INTO "user" (username, password, email)
-    VALUES ('user1', '1234', 'user1@test.com');
+    VALUES ('user1', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user1@test.com');
 INSERT INTO "user" (username, password, email)
-    VALUES ('user2', '1234', 'user2@test.com');  
+    VALUES ('user2', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user2@test.com');  
 INSERT INTO "user" (username, password, email)
-    VALUES ('user3', '1234', 'user3@test.com');  
+    VALUES ('user3', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user3@test.com');  
 INSERT INTO "user" (username, password, email)
-    VALUES ('user4', '1234', 'user4@test.com');            
+    VALUES ('user4', 'AEb+pDNvn5JmbtqCgLbHa8hRhhUttJ/3JzBLnrLcMHbxXZTC/n8JuDYOK2KbXepoZQ==', 'user4@test.com');            
 
 INSERT INTO List (title)
     VALUES ('TestList');
