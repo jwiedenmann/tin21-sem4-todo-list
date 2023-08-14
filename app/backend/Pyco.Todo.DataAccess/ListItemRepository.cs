@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Pyco.Todo.Data.Models;
 
 namespace Pyco.Todo.DataAccess;
 

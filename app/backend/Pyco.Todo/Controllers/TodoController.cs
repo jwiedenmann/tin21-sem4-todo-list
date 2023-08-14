@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Pyco.Todo.Core.Authorization.Attributes;
 
 namespace Pyco.Todo.Controllers;
 
+[Authorize]
 [Route("todo")]
 public class TodoController : Controller
 {
