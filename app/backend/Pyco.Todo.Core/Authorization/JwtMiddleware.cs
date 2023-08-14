@@ -16,6 +16,7 @@ public class JwtMiddleware
     public async Task Invoke(HttpContext context, IUserRepository userRepository, IJwtUtils jwtUtils)
     {
         string? token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        token ??= context.Request.Cookies["jwt"];
         IEnumerable<Claim>? claims = jwtUtils.ValidateJwtToken(token);
         string? username = claims?.FirstOrDefault(x => x.Type == "username")?.Value;
 

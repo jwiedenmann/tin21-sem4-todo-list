@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Flurl" Version="3.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Pyco.Todo.Core\Pyco.Todo.Core.csproj" />
     <ProjectReference Include="..\Pyco.Todo.DataAccess\Pyco.Todo.DataAccess.csproj" />
     <ProjectReference Include="..\Pyco.Todo.Data\Pyco.Todo.Data.csproj" />

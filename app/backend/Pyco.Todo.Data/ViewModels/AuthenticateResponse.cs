@@ -13,10 +13,13 @@ public class AuthenticateResponse
         RefreshToken = refreshToken;
     }
 
+    // neccessary for json deserialization
+    public AuthenticateResponse() { }
+
     public int Id { get; set; }
-    public string Username { get; set; }
-    public string JwtToken { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string JwtToken { get; set; } = string.Empty;
 
     [JsonIgnore] // refresh token is returned in http only cookie
-    public string RefreshToken { get; set; }
+    public string RefreshToken { get; set; } = string.Empty;
 }
