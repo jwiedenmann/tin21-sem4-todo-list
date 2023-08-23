@@ -54,25 +54,33 @@ function removeUser(user) {
 <template>
 <div class="listAdmin">
     <h1>{{ title }}</h1>
-    <form>
-        <div class="form-group row">
-            <label for="titleHelp" class="col-sm-2 col-form-label">Title</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="ListTitle" aria-describedby="titleHelp" v-model="title" required>
-            </div> 
-        </div>
-        <div class="form-group-row">
+    <form id="editTodoListForm">
+        <div class="form-group">
             <div class="input-group">
-                <label for="addUser" class="col-sm-2 col-form-label">Add User</label>
-                <div class=" form-control col-sm-10">
+                <div class="form-control col-sm-10 control-no-border">
+                    <div class="titleInput">
+                        <div class="input-group">
+                            <label for="listTitle" class="col-sm-2 col-form-label">Title</label>
+                            <div class="col-sm-10 control-no-border">
+                                <input type="text" class="form-control rounded" id="listTitle" aria-describedby="listTitle" v-model="title" required>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class=" form-control col-sm-10 control-no-border">
                     <div class="search-bar">
-                        <input id="addUser" type="text" v-model="searchInput" placeholder="Search for user to add..." />
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>                 
-                    <ul class="list-group">
-                        <li  v-for="user in filteredList()" :key="user" class="list-group-item">
+                        <div class="input-group">
+                            <label for="addUser" class="col-sm-2 col-form-label">Add User</label>
+                            <input  id="addUser" type="search"  v-model="searchInput" class="form-control rounded" placeholder="Search for user to add..." aria-label="Search" aria-describedby="addUser"/>
+                            <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>           
+                    <ul class="list-group" id="searchResultList">
+                        <li  v-for="user in filteredList()" :key="user" class="list-group-item d-flex justify-content-between align-items-center">
                         {{ user }}
-                        <button class="button alert pull-right"  @click="addUser(user)"><i class="fa-solid fa-plus"></i></button>
+                        <button type="button" class="btn btn-outline-success"  @click="addUser(user)"><i class="fa-solid fa-plus"></i></button>
                         </li>
                     </ul>
                     <div class="item error" v-if="searchInput&&!filteredList().length">
@@ -97,9 +105,8 @@ function removeUser(user) {
                         </div>
                     </div>
                 </div>                     
-            </div>
-             
-        </div>
+            </div>          
+        </div>  
         <hr />
         <h3>Shared users</h3>
         <div class="form-group row">          
@@ -122,3 +129,20 @@ function removeUser(user) {
 </div>
  
 </template>
+<style scoped>
+#editTodoListForm {
+    padding: 2em;
+}
+
+.control-no-border{
+    border: none;
+}
+
+#searchResultList{
+    margin-top: 1em;
+}
+
+.search-bar {
+    margin-top: 2em;
+}
+</style>

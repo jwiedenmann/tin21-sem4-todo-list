@@ -1,6 +1,5 @@
 <script setup>
 import ListAdminVue from '../components/ListAdmin.vue'
-import { ref } from 'vue'
 
 const todoDataList = [
           {
@@ -34,19 +33,6 @@ const todoDataList = [
             "role": "readOnly"
           }
         ]
-
-let showAdmin = ref(false);
-const todoTitle = ref('New Todo List')
-// set a boolean ref value as false. we will be using the openModal function to trigger its change
-
-
-// create the openModal function and set showModal to true
-const openAdmin = (title) => {
-  showAdmin.value = true;
-  todoTitle.value = title
-  // console.log(showModal);
-};
-
 </script>
 <template>
     <div class="detail">
@@ -54,7 +40,7 @@ const openAdmin = (title) => {
         <div class="col-md-4">
           <ul class="list-group">
           <li v-for="todo in todoDataList" v-bind:key="todo.id">
-            <div class="list-group-item flex-column align-items-start" @click="openAdmin(todo.title)">
+            <div class="list-group-item flex-column align-items-start" >
               <div class="d-flex justify-content-between">
                 <h5 class="mb-1">{{ todo.title }}</h5>
                 <small>{{ todo.creationDate }}</small>
@@ -64,7 +50,7 @@ const openAdmin = (title) => {
           </li>
         </ul>
         <div class="list-group">
-            <div class="list-group-item" @click="openAdmin()">
+            <div class="list-group-item">
                 Test
             </div>
             <div class="list-group-item">
@@ -73,7 +59,7 @@ const openAdmin = (title) => {
         </div>
       </div>
       <div class="col-md-8">
-        <ListAdminVue v-if="showAdmin" :title="todoTitle"/>
+        <ListAdminVue />
       </div>
      </div>
     </div>
