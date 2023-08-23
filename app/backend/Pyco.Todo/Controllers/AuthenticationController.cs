@@ -3,6 +3,7 @@ using Pyco.Todo.Core.Authorization;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Data.Jwt;
 using Pyco.Todo.Data.ViewModels;
+using System.Web;
 
 namespace Pyco.Todo.Controllers;
 
@@ -43,6 +44,7 @@ public class AuthenticationController : Controller
     public IActionResult RefreshToken()
     {
         string? refreshToken = Request.Cookies["refreshToken"];
+        refreshToken = HttpUtility.UrlDecode(refreshToken);
         AuthenticateResponse response = _authenticationService.RefreshToken(refreshToken ?? string.Empty);
 
         var cookieOptions = new CookieOptions
