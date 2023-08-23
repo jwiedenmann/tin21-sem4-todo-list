@@ -4,7 +4,7 @@ using Pyco.Todo.Core.Authorization.Attributes;
 namespace Pyco.Todo.Controllers
 {
     [Authorize]
-    [Route("{controller}")]
+    [Route("/api/v1/{controller}")]
     public class ListController : Controller
     {
         [HttpGet]
