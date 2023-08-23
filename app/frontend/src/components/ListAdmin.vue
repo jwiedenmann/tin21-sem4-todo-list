@@ -11,6 +11,34 @@ let duplicateUser = ref('')
 
 const fooUsers = ["Maxi", "John Cena", "DerUser42069"]
 
+const exampleUsers = [
+          {
+            "id": 1,
+            "name": "Maxi",
+            "role": "ListAdmin"
+          },
+          {
+            "id": 2,
+            "name": "John A. S. Wiedenmann",
+            "role": "ListUser"
+          },
+          {
+            "id": 3,
+            "name": "Danilel Schwager",
+            "role": "ListUser"
+          },
+          {
+            "id": 4,
+            "name": "tillh.de",
+            "role": "ReadOnly"
+          },
+          {
+            "id": 5,
+            "name": "Angela Merkel",
+            "role": "ListUser"
+          },
+        ]
+
 const state = reactive({
     modal_error: null,
 })
@@ -109,21 +137,24 @@ function removeUser(user) {
         </div>  
         <hr />
         <h3>Shared users</h3>
-        <div class="form-group row">          
-            <ul class="list-group">
-                <li v-for="user in users" :key="user.id" class="list-group-item">
-                {{ user.name }}
-                <label for="userRole">Role</label>
-                <select id="userRole">
-                    <option selected>Admin</option>
-                    <option>User</option>
-                    <option>Read only</option>
-                </select>
-                <button lass="button alert pull-right"  @click="removeUser(user)">Remove</button>
+        <div class="form-group row d-flex justify-content-center align-items-center">          
+            <ul class="list-group col-sm-8">
+                <li v-for="user in users" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
+                <i class="fa-solid fa-user col-sm-1 role-icon"></i>
+                <span class="col-sm-4">{{ user.name }}</span>
+                <span class="roleSelect col-sm-2">
+                    <select class="form-select" aria-label="Select role for user" name="userRole">
+                        <option selected>Admin</option>
+                        <option>User</option>
+                        <option>Read only</option>
+                    </select>
+                </span>
+                <button type="button" class="btn btn-danger col-sm-1"  @click="removeUser(user)"><i class="fa-solid fa-trash-can"></i></button>
                 </li>
             </ul>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <hr />
+        <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
     
 </div>
@@ -144,5 +175,8 @@ function removeUser(user) {
 
 .search-bar {
     margin-top: 2em;
+}
+.role-icon{
+    font-size: 2em;
 }
 </style>
