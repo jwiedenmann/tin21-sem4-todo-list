@@ -140,8 +140,8 @@ function removeUser(userId) {
         <h3>Shared users</h3>
         <div class="form-group row d-flex justify-content-center align-items-center">          
             <ul class="list-group col-sm-8">
-                <li v-for="user in users" :key="user.id" >
-                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.name" @response="removeUser"/>
+                <li v-for="user in users" :key="user.id" class="suListItem" >
+                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.name" @remove-user="removeUser"/>
                 </li>
             </ul>
         </div>
@@ -157,6 +157,9 @@ function removeUser(userId) {
     padding: 2em;
 }
 
+.suListItem{
+    list-style-type: none;
+}
 .control-no-border{
     border: none;
 }

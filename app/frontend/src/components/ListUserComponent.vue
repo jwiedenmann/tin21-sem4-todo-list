@@ -7,7 +7,7 @@ const props = defineProps({
     userName: String
 })
 
-const emit = defineEmits(['response'])
+const emit = defineEmits(['removeUser'])
 
 const selected = ref(props.userRole)
 </script>
@@ -25,7 +25,7 @@ const selected = ref(props.userRole)
             </select>
         </span>
         <span class="col-sm-4" id="userName">{{ userName }}</span>
-        <button type="button" class="btn btn-danger col-sm-1"  @click="emit('response', userId)"><i class="fa-solid fa-trash-can"></i></button>
+        <button type="button" class="btn btn-danger col-sm-1"  @click="emit('removeUser', userId)"><i class="fa-solid fa-trash-can"></i></button>
     </span>
 </template>
 
