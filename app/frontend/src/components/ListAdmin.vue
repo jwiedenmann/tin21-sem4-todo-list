@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Modal } from'bootstrap'
+import ListUserComponentVue from './ListUserComponent.vue'
 
 // give each user a unique id
 let id = 0
@@ -9,7 +10,7 @@ const title = ref('New Todo List')
 const users = ref([])
 let duplicateUser = ref('')
 
-const fooUsers = ["Maxi", "John Cena", "DerUser42069"]
+//const fooUsers = ["Maxi", "John Cena", "DerUser42069"]
 
 const exampleUsers = [
           {
@@ -58,24 +59,24 @@ function closeModal()
 }
 
 function filteredList(){
-    return fooUsers.filter((userName)=>
-        userName.toLowerCase().includes(searchInput.value.toLowerCase())
+    return exampleUsers.filter((user)=>
+        user.name.toLowerCase().includes(searchInput.value.toLowerCase())
     );
 }
 
-function addUser(userName) {
-    if(userName && !users.value.some(u => u.name === userName)){
-        users.value.push({ id: id++, name: userName });
+function addUser(user) {
+    if(user.name && !users.value.some(u => u.name === user.name)){
+        users.value.push({ id: user.id, name: user.name, role: user.role });
         console.log(users)
     }else{
         openModal();
-        duplicateUser.value = userName
+        duplicateUser.value = user.name
     }
   
 }
 
-function removeUser(user) {
-  users.value = users.value.filter((u) => u !== user)
+function removeUser(userId) {
+  users.value = users.value.filter((u) => u.id !== userId)
 }
 </script>
 
@@ -106,8 +107,8 @@ function removeUser(user) {
                         </div>
                     </div>           
                     <ul class="list-group" id="searchResultList">
-                        <li  v-for="user in filteredList()" :key="user" class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ user }}
+                        <li  v-for="user in filteredList()" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ user.name }}
                         <button type="button" class="btn btn-outline-success"  @click="addUser(user)"><i class="fa-solid fa-plus"></i></button>
                         </li>
                     </ul>
@@ -139,17 +140,8 @@ function removeUser(user) {
         <h3>Shared users</h3>
         <div class="form-group row d-flex justify-content-center align-items-center">          
             <ul class="list-group col-sm-8">
-                <li v-for="user in users" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
-                <i class="fa-solid fa-user col-sm-1 role-icon"></i>
-                <span class="col-sm-4">{{ user.name }}</span>
-                <span class="roleSelect col-sm-2">
-                    <select class="form-select" aria-label="Select role for user" name="userRole">
-                        <option selected>Admin</option>
-                        <option>User</option>
-                        <option>Read only</option>
-                    </select>
-                </span>
-                <button type="button" class="btn btn-danger col-sm-1"  @click="removeUser(user)"><i class="fa-solid fa-trash-can"></i></button>
+                <li v-for="user in users" :key="user.id" >
+                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.name" @response="removeUser"/>
                 </li>
             </ul>
         </div>
@@ -175,8 +167,5 @@ function removeUser(user) {
 
 .search-bar {
     margin-top: 2em;
-}
-.role-icon{
-    font-size: 2em;
 }
 </style>
