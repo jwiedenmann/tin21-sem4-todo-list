@@ -50,7 +50,7 @@ public class AuthenticationController : Controller
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Lax,
             Secure = false,
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.RefreshTokenExpirationMinutes)
         };
