@@ -1,3 +1,10 @@
+<script setup>
+import store from './store';
+
+let jwtToken = window.$cookies.get('jwt');
+store.commit('updateJwtToken', jwtToken);
+</script>
+
 <template>
   <div>
     <nav>
@@ -6,7 +13,7 @@
       <router-link to="/lists">My Todos</router-link> | 
       <router-link to="/ListDetal">Dev ListDetail</router-link>
     </nav>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 

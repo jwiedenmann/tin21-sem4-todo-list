@@ -8,21 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
-#if DEBUG
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(
-        name: "_myAllowSpecificOrigins",
-        policy =>
-        {
-            policy
-                .WithOrigins("http://localhost:8080")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-});
-#endif
-
 builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
@@ -40,19 +25,23 @@ if (app.Environment.IsDevelopment())
 //    app.UseHsts();
 //}
 
-app.UseHttpsRedirection();
-app.UseDefaultFiles();
+#if DEBUG
+app.UseCors(x => x
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithOrigins("http://localhost:8080")
+    .WithOrigins("http://localhost:5000")
+    .AllowCredentials());
+#endif
+
+//app.UseHttpsRedirection();
+//app.UseDefaultFiles();
 app.UseStaticFiles();
 //app.UseCookiePolicy();
 
 app.UseRouting();
 // app.UseRateLimiter();
 // app.UseRequestLocalization();
-// app.UseCors();
-
-#if DEBUG
-app.UseCors("_myAllowSpecificOrigins");
-#endif
 
 //app.UseAuthentication();
 //app.UseAuthorization();

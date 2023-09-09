@@ -16,8 +16,9 @@
 
 <script>
 // @ is an alias to /src
-import { inject } from 'vue'
 import HelloWorld from '@/components/HelloWorld.vue'
+import { todo_get } from '@/todoclient';
+import routes from '@/constants/todoroutes'
 
 export default {
   name: 'HomeView',
@@ -30,16 +31,8 @@ export default {
     };
   },
   async mounted() {
-    const axios = inject('axios');
-    axios
-      .get("https://localhost:7098/api/v1/Test")
-      .then((response) => {
-        this.users = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    await todo_get(routes.LIST)
   }
-  
+
 }
 </script>
