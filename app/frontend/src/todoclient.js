@@ -6,7 +6,7 @@ export async function todo_get(route, parameters) {
     let counter = 0;
 
     while (counter < 2) {
-        let result = await get(route);
+        let result = await get(route, parameters);
 
         if (result.status == 200) {
             return result.data;
