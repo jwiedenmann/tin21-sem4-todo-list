@@ -92,7 +92,7 @@ select
     archive,
     creationDate
 from ""user""
-where username like @searchTerm;";
+where lower(username) like lower(@searchTerm);";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();

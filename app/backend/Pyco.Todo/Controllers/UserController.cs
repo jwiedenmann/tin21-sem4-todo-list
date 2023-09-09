@@ -29,7 +29,14 @@ public class UserController : ControllerBase
 
     [HttpGet("search")]
     public IActionResult GetByUsernameSearch(string searchTerm)
-        => Ok(_userRepository.Search(searchTerm));
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return Ok();
+        }
+
+        return Ok(_userRepository.Search($"__{searchTerm}__"));
+    }
 
     [AllowAnonymous]
     [HttpGet("exists")]
