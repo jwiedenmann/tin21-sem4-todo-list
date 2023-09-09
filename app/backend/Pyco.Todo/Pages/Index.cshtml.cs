@@ -21,7 +21,7 @@ namespace Pyco.Todo.Pages
 
         public void OnGet() { }
 
-        public async Task OnPost([FromForm] string userNameOrEmail, [FromForm] string password)
+        public async Task<IActionResult> OnPost([FromForm] string userNameOrEmail, [FromForm] string password)
         {
             string baseAddress = _configuration.GetValue<string>("TodoApi:BaseAddress");
             string authentication = _configuration.GetValue<string>("TodoApi:Authentication");
@@ -47,7 +47,7 @@ namespace Pyco.Todo.Pages
             if (!response.IsSuccessStatusCode)
             {
                 //TODO do something in view
-                return;
+                return BadRequest();
             }
 
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -67,13 +67,13 @@ namespace Pyco.Todo.Pages
                 !SetCookieHeaderValue.TryParse(refreshToken, out SetCookieHeaderValue? refreshCookie) ||
                 refreshCookie is null)
             {
-                return;
+                return BadRequest();
             }
 
             SetCookieHeaderValue jwtCookie = new("jwt", authenticateResponse.JwtToken);
             AppendCookie(Response, jwtCookie);
             AppendCookie(Response, refreshCookie);
-            Response.Redirect(Flurl.Url.Combine(baseAddress, todo));
+            return Redirect(todo);
         }
 
         private void AppendCookie(HttpResponse response, SetCookieHeaderValue setCookie)
