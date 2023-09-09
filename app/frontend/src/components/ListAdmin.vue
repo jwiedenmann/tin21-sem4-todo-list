@@ -5,42 +5,14 @@ import { todo_get } from '@/todoclient';
 import routes from '@/constants/todoroutes'
 import ListUserComponentVue from './ListUserComponent.vue'
 
-// give each user a unique id
-let id = 0
+
 let searchInput = ref('')
 const title = ref('New Todo List')
 const users = ref([])
 let duplicateUser = ref('')
+let showMsg = false
 
-//const fooUsers = ["Maxi", "John Cena", "DerUser42069"]
 const searchUserResults = ref([])
-const exampleUsers = [
-          {
-            "id": 1,
-            "name": "Maxi",
-            "role": "ListAdmin"
-          },
-          {
-            "id": 2,
-            "name": "John A. S. Wiedenmann",
-            "role": "ListUser"
-          },
-          {
-            "id": 3,
-            "name": "Danilel Schwager",
-            "role": "ListUser"
-          },
-          {
-            "id": 4,
-            "name": "tillh.de",
-            "role": "ReadOnly"
-          },
-          {
-            "id": 5,
-            "name": "Angela Merkel",
-            "role": "ListUser"
-          },
-        ]
 
 const state = reactive({
     modal_error: null,
@@ -60,24 +32,22 @@ function closeModal()
     state.modal_error.hide()
 }
 
-function filteredList(){
-    return exampleUsers.filter((user)=>
-        user.name.toLowerCase().includes(searchInput.value.toLowerCase())
-    );
-}
-
 async function searchUser(searchTerm){
-    //hier controller call
-    searchUserResults.value = await todo_get(routes.USER_SEARCH, {searchTerm})  
+    //call UserController
+    if(searchTerm){
+        searchUserResults.value = await todo_get(routes.USER_SEARCH, {searchTerm})  
+        showMsg = true
+        console.log(searchUserResults.value)
+    } 
 }
 
 function addUser(user) {
-    if(user.name && !users.value.some(u => u.name === user.name)){
-        users.value.push({ id: user.id, name: user.name, role: user.role });
+    if(user.username && !users.value.some(u => u.username === user.username)){
+        users.value.push({ id: user.id, username: user.username, role: "ListAdmin" });
         console.log(users)
     }else{
         openModal();
-        duplicateUser.value = user.name
+        duplicateUser.value = user.username
     }
   
 }
@@ -115,16 +85,14 @@ function removeUser(userId) {
                         </div>
                     </div>           
                     <ul class="list-group" id="searchResultList">
-                        <li  v-for="user in searchUserResults" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ user.name }}
+                        <li v-for="user in searchUserResults" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ user.username }}
                         <button type="button" class="btn btn-outline-success"  @click="addUser(user)"><i class="fa-solid fa-plus"></i></button>
                         </li>
-                    </ul>
-                    <!--
-                    <div class="item error" v-if="searchInput&&!searchUserResults.length">
+                    </ul>                    
+                    <div class="item error" v-if="showMsg&&!searchUserResults.length">
                         <p>No results found!</p>
                     </div>
-                    -->
                     
                     <!-- Modal -->
                     <div class="modal fade"  id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -151,7 +119,7 @@ function removeUser(userId) {
         <div class="form-group row d-flex justify-content-center align-items-center">          
             <ul class="list-group col-sm-8">
                 <li v-for="user in users" :key="user.id" class="suListItem" >
-                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.name" @remove-user="removeUser"/>
+                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.username" @remove-user="removeUser"/>
                 </li>
             </ul>
         </div>

@@ -35,7 +35,7 @@ public class UserController : ControllerBase
             return Ok();
         }
 
-        return Ok(_userRepository.Search($"__{searchTerm}__"));
+        return Ok(_userRepository.Search($"%{searchTerm}%"));
     }
 
     [AllowAnonymous]
