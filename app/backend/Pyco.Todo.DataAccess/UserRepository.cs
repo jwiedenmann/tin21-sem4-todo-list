@@ -32,7 +32,7 @@ from ""user"";";
         return connection.Query<User>(query);
     }
 
-    public User? Get(string username)
+    public User? Get(string username, bool showArchived = false)
     {
         const string query = @"
 select
@@ -43,11 +43,13 @@ select
     archive,
     creationDate
 from ""user""
-where username = @username;";
+where
+    username = @username and
+    (archive = 0 or archive = @showArchived);";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefault<User?>(query, new { username });
+        return connection.QueryFirstOrDefault<User?>(query, new { username, showArchived });
     }
 
     public User? GetByToken(string token)
@@ -62,7 +64,7 @@ select
     u.creationDate
 from ""user"" as u
 inner join refreshToken as r on r.userId = u.id
-where r.token = @token;";
+where r.token = @token and u.archive = 0;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
@@ -81,7 +83,7 @@ where username = @username;";
         return (connection.QueryFirstOrDefault<int>(query, new { username })) != 0;
     }
 
-    public IEnumerable<User> Search(string searchTerm)
+    public IEnumerable<User> Search(string searchTerm, bool showArchived = false)
     {
         const string query = @"
 select
@@ -92,11 +94,13 @@ select
     archive,
     creationDate
 from ""user""
-where lower(username) like lower(@searchTerm);";
+where
+    lower(username) like lower(@searchTerm) and
+    (archive = 0 or archive = @showArchived);";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.Query<User>(query, new { searchTerm });
+        return connection.Query<User>(query, new { searchTerm, showArchived });
     }
 
     public int? Insert(User user)
