@@ -81,6 +81,24 @@ where username = @username;";
         return (connection.QueryFirstOrDefault<int>(query, new { username })) != 0;
     }
 
+    public IEnumerable<User> Search(string searchTerm)
+    {
+        const string query = @"
+select
+    id,
+    username,
+    password,
+    email,
+    archive,
+    creationDate
+from ""user""
+where username like @searchTerm;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Query<User>(query, new { searchTerm });
+    }
+
     public int? Insert(User user)
     {
         const string query = @"

@@ -8,6 +8,7 @@ namespace Pyco.Todo.DataAccess.Interfaces
         User? Get(string username);
         User? GetByToken(string token);
         bool UsernameExists(string username);
+        IEnumerable<User> Search(string searchTerm);
         /// <summary>
         /// Inserts the user data into the database.
         /// </summary>

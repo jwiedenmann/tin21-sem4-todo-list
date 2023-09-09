@@ -29,7 +29,7 @@ public class UserController : ControllerBase
 
     [HttpGet("search")]
     public IActionResult GetByUsernameSearch(string searchTerm)
-        => Ok(new List<User>() { new User() { Username = "blub"}, new User() { Username = "Jeff" } });
+        => Ok(_userRepository.Search(searchTerm));
 
     [AllowAnonymous]
     [HttpGet("exists")]
