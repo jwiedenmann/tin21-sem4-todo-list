@@ -27,6 +27,10 @@ public class UserController : ControllerBase
     public IActionResult GetByUsername(string username)
         => Ok(_userRepository.Get(username));
 
+    [HttpGet("search")]
+    public IActionResult GetByUsernameSearch(string username)
+        => Ok(new List<User>() { new User() { Username = "blub"}, new User() { Username = "Jeff" } });
+
     [AllowAnonymous]
     [HttpGet("exists")]
     public IActionResult UsernameExists(string username)
