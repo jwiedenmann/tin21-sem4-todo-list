@@ -13,7 +13,7 @@ const users = ref([])
 let duplicateUser = ref('')
 
 //const fooUsers = ["Maxi", "John Cena", "DerUser42069"]
-
+const searchUserResults = ref([])
 const exampleUsers = [
           {
             "id": 1,
@@ -66,6 +66,11 @@ function filteredList(){
     );
 }
 
+async function searchUser(searchTerm){
+    //hier controller call
+    searchUserResults.value = await todo_get(routes.USER_SEARCH, {searchTerm})  
+}
+
 function addUser(user) {
     if(user.name && !users.value.some(u => u.name === user.name)){
         users.value.push({ id: user.id, name: user.name, role: user.role });
@@ -80,6 +85,7 @@ function addUser(user) {
 function removeUser(userId) {
   users.value = users.value.filter((u) => u.id !== userId)
 }
+
 </script>
 
 <template>
@@ -105,18 +111,20 @@ function removeUser(userId) {
                         <div class="input-group">
                             <label for="addUser" class="col-sm-2 col-form-label">Add User</label>
                             <input  id="addUser" type="search"  v-model="searchInput" class="form-control rounded" placeholder="Search for user to add..." aria-label="Search" aria-describedby="addUser"/>
-                            <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="button" class="btn btn-outline-primary" @click="searchUser(searchInput)"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>           
                     <ul class="list-group" id="searchResultList">
-                        <li  v-for="user in filteredList()" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
+                        <li  v-for="user in searchUserResults" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
                         {{ user.name }}
                         <button type="button" class="btn btn-outline-success"  @click="addUser(user)"><i class="fa-solid fa-plus"></i></button>
                         </li>
                     </ul>
-                    <div class="item error" v-if="searchInput&&!filteredList().length">
+                    <!--
+                    <div class="item error" v-if="searchInput&&!searchUserResults.length">
                         <p>No results found!</p>
                     </div>
+                    -->
                     
                     <!-- Modal -->
                     <div class="modal fade"  id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
