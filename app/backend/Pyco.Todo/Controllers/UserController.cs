@@ -28,7 +28,7 @@ public class UserController : ControllerBase
         => Ok(_userRepository.Get(username));
 
     [HttpGet("search")]
-    public IActionResult GetByUsernameSearch(string username)
+    public IActionResult GetByUsernameSearch(string searchTerm)
         => Ok(new List<User>() { new User() { Username = "blub"}, new User() { Username = "Jeff" } });
 
     [AllowAnonymous]
