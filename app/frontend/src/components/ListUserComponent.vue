@@ -7,9 +7,12 @@ const props = defineProps({
     userName: String
 })
 
-const emit = defineEmits(['removeUser'])
-
+const emit = defineEmits(['removeUser', 'updateRole'])
 const selected = ref(props.userRole)
+
+function updateRole(){
+    emit('updateRole', props.userId, selected.value)
+}
 </script>
 
 <template>
@@ -18,7 +21,7 @@ const selected = ref(props.userRole)
         <i v-else-if="selected === 'ListAdmin'" class="fa-solid fa-user-gear col-sm-1 role-icon"></i>
         <i v-else class="fa-solid fa-glasses col-sm-1 role-icon"></i> 
         <span class="col-sm-3">    
-            <select v-model="selected" class="form-select" aria-label="Select role for user" name="userRole">
+            <select v-model="selected" class="form-select" @change="updateRole()" aria-label="Select role for user" name="userRole">
                 <option value="ListAdmin">Admin</option>
                 <option value="ListUser">User</option>
                 <option value="ReadOnly">Read only</option>

@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Modal } from'bootstrap'
-import { todo_get } from '@/todoclient';
+import { todo_get } from '@/todoclient'
+import { todo_post } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import ListUserComponentVue from './ListUserComponent.vue'
 
@@ -56,6 +57,28 @@ function addUser(user) {
 
 function removeUser(userId) {
   users.value = users.value.filter((u) => u.id !== userId)
+}
+
+async function createNewList(){
+    let listTitle = title.value
+    let listUsers = users.value
+    console.log(title.value)
+    console.log(users.value)
+    if(listTitle&&listUsers){
+        let list = {Title: listTitle, ListUsers: listUsers}
+        await todo_post(routes.USER_LIST, list)
+    } 
+}
+
+function updateRole(userId, newRole){
+    console.log(userId)
+    console.log(newRole)
+    if(userId&&newRole){
+        let userIndex = users.value.findIndex(u => u.id == userId)
+        console.log("Before Update: ", users.value[userIndex])
+        users.value[userIndex].role = newRole
+        console.log("After update: ", users.value[userIndex])
+    }
 }
 
 </script>
@@ -121,12 +144,12 @@ function removeUser(userId) {
         <div class="form-group row d-flex justify-content-center align-items-center">          
             <ul class="list-group col-sm-8">
                 <li v-for="user in users" :key="user.id" class="suListItem" >
-                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.username" @remove-user="removeUser"/>
+                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.username" @remove-user="removeUser" @update-role="updateRole"/>
                 </li>
             </ul>
         </div>
         <hr />
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-primary" @click="createNewList()">Save Changes</button>
     </form>
     
 </div>
