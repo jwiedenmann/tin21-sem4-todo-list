@@ -32,7 +32,7 @@ from ""user"";";
         return connection.Query<User>(query);
     }
 
-    public User? Get(string username, bool showArchived = false)
+    public User? Get(string username)
     {
         const string query = @"
 select
@@ -43,13 +43,11 @@ select
     archive,
     creationDate
 from ""user""
-where
-    username = @username and
-    (archive = 0 or archive = @showArchived);";
+where username = @username;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
-        return connection.QueryFirstOrDefault<User?>(query, new { username, showArchived });
+        return connection.QueryFirstOrDefault<User?>(query, new { username });
     }
 
     public IEnumerable<User> GetListUsers(int listId)
