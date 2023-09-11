@@ -4,7 +4,7 @@ using Npgsql;
 using Pyco.Todo.Data.Models;
 using Pyco.Todo.DataAccess.Interfaces;
 
-namespace Pyco.Todo.DataAccess;
+namespace Pyco.Todo.DataAccess.Repositories;
 
 public class RefreshTokenRepository : IRefreshTokenRepository
 {
