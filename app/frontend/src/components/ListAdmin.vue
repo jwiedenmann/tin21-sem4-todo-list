@@ -35,10 +35,12 @@ function closeModal()
 async function searchUser(searchTerm){
     //call UserController
     if(searchTerm){
-        searchUserResults.value = await todo_get(routes.USER_SEARCH, {searchTerm})  
-        showMsg = true
+        searchUserResults.value = await todo_get(routes.USER_SEARCH, {searchTerm}) 
+        showMsg = true 
         console.log(searchUserResults.value)
-    } 
+    }else {
+        searchUserResults.value = []
+    }
 }
 
 function addUser(user) {
@@ -80,7 +82,7 @@ function removeUser(userId) {
                     <div class="search-bar">
                         <div class="input-group">
                             <label for="addUser" class="col-sm-2 col-form-label">Add User</label>
-                            <input  id="addUser" type="search"  v-model="searchInput" class="form-control rounded" placeholder="Search for user to add..." aria-label="Search" aria-describedby="addUser"/>
+                            <input  id="addUser" type="search" v-model="searchInput" class="form-control rounded" placeholder="Search for user to add..." aria-label="Search" aria-describedby="addUser"/>
                             <button type="button" class="btn btn-outline-primary" @click="searchUser(searchInput)"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>           
