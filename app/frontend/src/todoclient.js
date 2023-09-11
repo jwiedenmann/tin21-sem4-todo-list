@@ -3,15 +3,15 @@ import routes from '@/constants/todoroutes'
 import axios from 'axios'
 
 export async function todo_get(route, parameters) {
-    return request(route, parameters, null, 0);
+    return await request(route, parameters, null, 0);
 }
 
 export async function todo_post(route, parameters, body) {
-    return request(route, parameters, body, 1);
+    return await request(route, parameters, body, 1);
 }
 
 export async function todo_put(route, parameters, body) {
-    return request(route, parameters, body, 2);
+    return await request(route, parameters, body, 2);
 }
 
 async function request(route, parameters, body, httpMethod) {
@@ -63,7 +63,7 @@ async function get(route, parameters) {
     }
 }
 
-async function post(route, body, parameters) {
+async function post(route, parameters, body) {
     try {
         let resp = await axios.post(route, body, { params: parameters, withCredentials: true });
         return resp;
@@ -72,7 +72,7 @@ async function post(route, body, parameters) {
     }
 }
 
-async function put(route, body, parameters) {
+async function put(route, parameters, body) {
     try {
         let resp = await axios.put(route, body, { params: parameters, withCredentials: true });
         return resp;

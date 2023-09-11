@@ -10,7 +10,8 @@ import ListUserComponentVue from './ListUserComponent.vue'
 let searchInput = ref('')
 const title = ref('New Todo List')
 const users = ref([])
-let duplicateUser = ref('')
+const modalHeader = ref('Error!')
+const modalMsg = ref('')
 let showMsg = false
 
 const searchUserResults = ref([])
@@ -45,38 +46,46 @@ async function searchUser(searchTerm){
 }
 
 function addUser(user) {
-    if(user.username && !users.value.some(u => u.username === user.username)){
-        users.value.push({ id: user.id, username: user.username, role: "ListAdmin" });
+    if(user.username && !users.value.some(u => u.Username === user.username)){
+        users.value.push({ Id: user.id, Username: user.username, ListUserRole: "ListAdmin" });
         console.log(users)
     }else{
+        modalHeader.value = "User already added!"
+        modalMsg.value = "The user <b>" + user.username + "</b> was already added to the list. Please add a new user to your Todos!"
         openModal();
-        duplicateUser.value = user.username
     }
   
 }
 
 function removeUser(userId) {
-  users.value = users.value.filter((u) => u.id !== userId)
+  users.value = users.value.filter((u) => u.Id !== userId)
 }
 
 async function createNewList(){
     let listTitle = title.value
     let listUsers = users.value
-    console.log(title.value)
-    console.log(users.value)
-    if(listTitle&&listUsers){
-        let list = {Title: listTitle, ListUsers: listUsers}
-        await todo_post(routes.USER_LIST, list)
-    } 
+    if(!listTitle){
+        modalHeader.value = "Missing title."
+        modalMsg.value = "Please give your Todo list a title."
+        openModal();
+    }else if(!users.value.length){
+        modalHeader.value = "Who is this for?"
+        modalMsg.value = "Please make sure to select at least one user that has access to the Todo list."
+        openModal();
+    }else {
+        //TODO add the listUsers to the list object
+        let list = {Title: listTitle}
+        await todo_post(routes.LIST, null, list)
+    }
 }
 
 function updateRole(userId, newRole){
     console.log(userId)
     console.log(newRole)
     if(userId&&newRole){
-        let userIndex = users.value.findIndex(u => u.id == userId)
+        let userIndex = users.value.findIndex(u => u.Id == userId)
         console.log("Before Update: ", users.value[userIndex])
-        users.value[userIndex].role = newRole
+        users.value[userIndex].ListUserRole = newRole
         console.log("After update: ", users.value[userIndex])
     }
 }
@@ -124,11 +133,11 @@ function updateRole(userId, newRole){
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">User already added!</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">{{ modalHeader }}</h5>
                                 <button type="button" class="btn-close" aria-label="Close" @click="closeModal()"></button>
                             </div>
                             <div class="modal-body">
-                                The user {{ duplicateUser }} was already added to the list. Please add a new user to your Todos! 
+                                {{ modalMsg }} 
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" @click="closeModal()">Ok</button>
@@ -143,8 +152,8 @@ function updateRole(userId, newRole){
         <h3>Shared users</h3>
         <div class="form-group row d-flex justify-content-center align-items-center">          
             <ul class="list-group col-sm-8">
-                <li v-for="user in users" :key="user.id" class="suListItem" >
-                    <ListUserComponentVue :userId="user.id" :userRole="user.role" :userName="user.username" @remove-user="removeUser" @update-role="updateRole"/>
+                <li v-for="user in users" :key="user.Id" class="suListItem" >
+                    <ListUserComponentVue :userId="user.Id" :userRole="user.ListUserRole" :userName="user.Username" @remove-user="removeUser" @update-role="updateRole"/>
                 </li>
             </ul>
         </div>

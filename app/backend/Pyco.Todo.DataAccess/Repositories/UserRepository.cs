@@ -112,7 +112,7 @@ select
 from ""user""
 where
     lower(username) like lower(@searchTerm) and
-    (archive = 0 or archive = @showArchived);";
+    (archive = false or archive = @showArchived);";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();
