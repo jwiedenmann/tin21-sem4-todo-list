@@ -1,4 +1,5 @@
 <template>
+  <div class="list-overview">
   <!-- <div class="lists">
     <h3>Todos for me</h3>
     <div class="list-group">
@@ -18,7 +19,7 @@
       <div class="row flex-grow-1">
         <div class="col-3">
           <div class="row border-end border-bottom rounded-top-3 rounded-end-0 p-3 text-light"
-            style="background-color: #54B4D3;">Jonas Wiedenmann</div>
+            style="background-color: #54B4D3;">{{ username }}</div>
           <div class="row p-4 todo-list-element" id="1" @click="selectTodoList()">Meine tolle TODO Liste</div>
           <div class="row">blub</div>
           <div class="row">blub</div>
@@ -35,6 +36,7 @@
       &copy; 2023
     </p>
   </footer>
+</div>
 </template>
 
 <style scoped>
@@ -44,6 +46,10 @@
 </style>
 
 <script setup>
+import { ref } from 'vue';
+import store from '@/store';
+
+const username = ref(store.state.user.username)
 
 function selectTodoList(listId) {
   
