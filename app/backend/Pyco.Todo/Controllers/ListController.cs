@@ -23,7 +23,7 @@ namespace Pyco.Todo.Controllers
             _listRepository = listRepository;
         }
 
-        [HttpGet]
+        [HttpGet("user")]
         public IActionResult Get()
         {
             HttpContext.Items.TryGetValue("User", out object? obj);
