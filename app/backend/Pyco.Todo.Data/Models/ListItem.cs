@@ -8,4 +8,6 @@ public class ListItem
     public string Content { get; set; } = string.Empty;
     public bool Archive { get; set; }
     public DateTime CreationDate { get; set; }
+
+    public List<int> CheckedByUserIds { get; set; } = new List<int>();
 }
