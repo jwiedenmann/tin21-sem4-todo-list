@@ -19,7 +19,7 @@ store.commit('updateJwtToken', jwtToken);
 <style>
 body,
 html {
-  background-color: snow;
+  background-color: #EEEEEE;
 }
 
 #app {
@@ -28,7 +28,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: snow;
+  background-color: #EEEEEE;
 }
 
 nav {
