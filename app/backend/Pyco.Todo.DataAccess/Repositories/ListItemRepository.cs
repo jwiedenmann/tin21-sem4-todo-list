@@ -74,6 +74,6 @@ where
                 return 0;
             });
 
-        throw new NotImplementedException();
+        return listItemCheckedUsers;
     }
 }
