@@ -6,24 +6,29 @@ store.commit('updateJwtToken', jwtToken);
 </script>
 
 <template>
-  <div>
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/lists">My Todos</router-link> | 
-      <router-link to="/ListDetal">Dev ListDetail</router-link>
-    </nav>
+  <div class="container min-vh-100 d-flex flex-column">
+    <header class="row pb-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+        <span class="fs-4">PYCO TODO</span>
+      </a>
+    </header>
     <router-view />
   </div>
 </template>
 
 <style>
+body,
+html {
+  background-color: #EEEEEE;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background-color: #EEEEEE;
 }
 
 nav {

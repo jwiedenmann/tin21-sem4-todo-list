@@ -1,7 +1,9 @@
-﻿using Pyco.Todo.Core.Authorization;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Pyco.Todo.Core.Authorization;
 using Pyco.Todo.Data.Jwt;
-using Pyco.Todo.DataAccess;
+using Pyco.Todo.DataAccess.DataProvider;
 using Pyco.Todo.DataAccess.Interfaces;
+using Pyco.Todo.DataAccess.Repositories;
 
 namespace Pyco.Todo;
 
@@ -29,5 +31,9 @@ public static class IServiceCollectionExtensions
     {
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IListRepository, ListRepository>();
+        services.AddScoped<IListItemRepository, ListItemRepository>();
+
+        services.AddScoped<IListDataProvider, ListDataProvider>();
     }
 }

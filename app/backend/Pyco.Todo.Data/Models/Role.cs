@@ -4,5 +4,6 @@ public enum Role
 {
     None,
     ListAdmin,
-    ListUser
+    ListUser,
+    ReadOnly
 }

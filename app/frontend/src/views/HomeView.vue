@@ -31,7 +31,7 @@ export default {
     };
   },
   async mounted() {
-    await todo_get(routes.LIST)
+    await todo_get(routes.LIST, { listId: 1 })
   }
 
 }

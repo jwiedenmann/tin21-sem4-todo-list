@@ -23,4 +23,7 @@ public class User
 
     [JsonIgnore]
     public RefreshToken? RefreshToken { get; set; }
+
+    // the role of the user within one specific list, e.g listadmin
+    public Role ListUserRole { get; set; }
 }
