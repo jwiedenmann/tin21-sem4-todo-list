@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, defineProps } from 'vue'
 import { Modal } from'bootstrap'
 import { todo_get } from '@/todoclient'
 import { todo_post } from '@/todoclient'
@@ -7,8 +7,17 @@ import routes from '@/constants/todoroutes'
 import ListUserComponentVue from './ListUserComponent.vue'
 
 
+const props = defineProps({
+    listTitle: {
+        type: String,
+        required: true
+    },
+    listUsers: Array
+})
+
+
 let searchInput = ref('')
-const title = ref('New Todo List')
+const title = ref(props.listTitle)
 const users = ref([])
 const modalHeader = ref('Error!')
 const modalMsg = ref('')
@@ -16,12 +25,26 @@ let showMsg = false
 
 const searchUserResults = ref([])
 
+const UserRoles = {
+    0: "None",
+    1: "ListAdmin",
+    2: "ListUser",
+    3: "ReadOnly"
+}
 const state = reactive({
     modal_error: null,
 })
 
 onMounted(() => {
     state.modal_error = new Modal('#errorModal', {})
+    console.log(users.value)
+    let sharedUsers = props.listUsers
+    
+    if(!users.value.length&&sharedUsers.length){
+        for(let i=0; i<props.listUsers.length; i++){
+            users.value.push({ Id: sharedUsers[i].id, Username: sharedUsers[i].username, ListUserRole: Object.values(UserRoles)[sharedUsers[i].listUserRole] });
+        }
+    }
 })
 
 function openModal()
@@ -51,7 +74,7 @@ function addUser(user) {
         console.log(users)
     }else{
         modalHeader.value = "User already added!"
-        modalMsg.value = "The user <b>" + user.username + "</b> was already added to the list. Please add a new user to your Todos!"
+        modalMsg.value = "The user " + user.username + " was already added to the list. Please add a new user to your Todos!"
         openModal();
     }
   

@@ -2,7 +2,7 @@
   <div class="lists">
     <h3>Todos for me</h3>
     <div class="list-group">
-      <div v-for="todo in content.todoDataList" v-bind:key="todo.id">
+      <div v-for="todo in todoDataList" v-bind:key="todo.id">
         <a :href="'/list/' + todo.id" class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">{{ todo.title }}</h5>
@@ -16,12 +16,8 @@
 </template>
 
 <style scoped></style>
-<script>
-export default {
-  data() {
-    return {
-      content: {
-        todoDataList: [
+<script setup>
+const todoDataList = [
           {
             "id": 1,
             "title": "Meine erste Todo",
@@ -53,9 +49,4 @@ export default {
             "role": "readOnly"
           }
         ]
-      }
-    }
-
-  }
-}
 </script>
