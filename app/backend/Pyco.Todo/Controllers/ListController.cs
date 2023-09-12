@@ -13,10 +13,27 @@ namespace Pyco.Todo.Controllers
     public class ListController : Controller
     {
         private readonly IListDataProvider _listDataProvider;
+        private readonly IListRepository _listRepository;
 
-        public ListController(IListDataProvider listDataProvider)
+        public ListController(
+            IListDataProvider listDataProvider,
+            IListRepository listRepository)
         {
             _listDataProvider = listDataProvider;
+            _listRepository = listRepository;
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            HttpContext.Items.TryGetValue("User", out object? obj);
+
+            if (obj is null || obj is not User user)
+            {
+                throw new UnauthorizedException();
+            }
+
+            return Ok(_listRepository.Get(user.Id));
         }
 
         [HttpGet]
