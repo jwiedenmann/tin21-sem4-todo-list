@@ -29,21 +29,13 @@ const TodoName = ref('')
 
 const Tasks = ref([])
 const Users = ref([])
-let numbers = [3, 4, 3, 2, 3, 3, 7]
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
     currentUserId.value = store.state.user.id
-    //let newList = await todo_get(routes.LIST, { listId: 1 })
-    //let lis = newList.listItems
-    //let checkedUsers = lis[0].checkedByUserIds
     let lisUsers = props.listUsers
     let todoListItems = props.listItems
     TodoName.value = props.listTitle
-    
-    //let nasd = lis[0].checkedByUserIds.length
-
-    //if (lis[0].checkedByUserIds.includes(3)) nasd = 3;
 
     for (let i = 0; i < todoListItems.length; i++) {
         let checkedByCurrentUser = false
@@ -91,8 +83,6 @@ function CreateTask() {
 
 function DeleteTask(taskText) {
     Tasks.value = Tasks.value.filter(tasks => tasks.text != taskText)
-
-    // Tasks.value.splice(taskId, 1);
 }
 
 function EditTask(taskId) {
