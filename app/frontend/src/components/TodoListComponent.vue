@@ -11,31 +11,39 @@ import store from '@/store';
 let TaskId = 0
 let UserId = 0
 const currentUser = ref('')
+const currentUserId = ref(0)
 const task = ref('')
 let editedTaskId = null
 
 const TodoName = ref('')
 
 const Tasks = ref([])
-
-const Users = ref([
-    { id: UserId++, name: 'Donile', role: 'admin', done: true },
-    { id: UserId++, name: 'Maxüüüüüü', role: 'user', done: false },
-    { id: UserId++, name: 'Jonaaaas', role: 'user', done: false },
-])
+const Users = ref([])
+let numbers = [3, 4, 3, 2, 3, 3, 7]
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
+    currentUserId.value = store.state.user.id
     let newList = await todo_get(routes.LIST, { listId: 1 })
     let lis = newList.listItems
+    let checkedUsers = lis[0].checkedByUserIds
     let lisUsers = newList.listUsers
     TodoName.value = newList.title
 
+    let nasd = lis[0].checkedByUserIds.length
+
+    if (lis[0].checkedByUserIds.includes(3)) nasd = 3;
+
     for (let i = 0; i < lis.length; i++) {
+        let checkedByCurrentUser = false
+        if (lis[i].checkedByUserIds.includes(currentUserId)) checkedByCurrentUser = true;
+
         console.log(lis[i].content);
         Tasks.value.push({
             id: TaskId++,
-            text: lis[i].content
+            text: lis[i].content,
+            checkedSum: lis[i].checkedByUserIds.length,
+            isCheckedByCurrentUser: checkedByCurrentUser
         })
     }
 
@@ -57,11 +65,13 @@ function CreateTask() {
     if (editedTaskId === null) {
         Tasks.value.push({
             id: TaskId++,
-            text: task.value
+            text: task.value,
+            checkedSum: 0,
+            isCheckedByCurrentUser: false
         })
     }
     else {
-        Tasks.value[editedTaskId].name = task;
+        Tasks.value[editedTaskId].text = task.value;
         editedTaskId = null;
     }
 
@@ -88,13 +98,14 @@ function EditTask(taskId) {
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
             <input v-model="task" type="text" placeholder="Neues Todo hinzufügen" class="form-control">
-            <button @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
+            <button v-if="editedTaskId != null" @click="CreateTask" class="btn btn-primary">Edit</button>
+            <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
         </div>
         <hr>
         <div class="row row-cols-2 m-5">
 
             <!-- List of Tasks -->
-            <div class="col-9">
+            <div class="col-8">
                 <ul class="list-group  list-group-hover">
                     <li class="list-group-item" style="font-weight: bold; background: lightgray;">Tasks:</li>
                     <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
@@ -114,15 +125,26 @@ function EditTask(taskId) {
             <!-- List of completed Tasks -->
             <div class="col-2">
                 <ul class="list-group">
-                    <li class="list-group-item" style="font-weight: bold; background: lightgray">{{currentUser}}</li>
-                    <li v-for="n in Tasks.length" :key="n.id" class="list-group-item">
-                        <input type="checkbox" checked>
+                    <li class="list-group-item" style="font-weight: bold; background: lightgray">{{ currentUser }}</li>
+                    <li v-for="todos in Tasks" :key="todos.id" class="list-group-item">
+                        <input v-if="todos.checkedByCurrentUser" type="checkbox" checked>
+                        <input v-else type="checkbox">
                     </li>
                 </ul>
                 <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
                     Alle anzeigen
                 </button>
+            </div>
+
+            <div class="col-2">
+                <ul class="list-group">
+                    <li class="list-group-item" style="font-weight: bold; background: lightgray">Done by</li>
+                    <li v-for="task in Tasks" :key="task.id" class="list-group-item">
+                        {{ task.checkedSum }} / {{ Users.length }}
+                    </li>
+                    <li class="list-group-item" style="font-weight: bold; background: lightgray">users</li>
+                </ul>
             </div>
         </div>
 
@@ -151,19 +173,20 @@ function EditTask(taskId) {
                                         <!-- Delete Button -->
                                         <button @click="DeleteTask(todo.id)" class="btn btn-danger"
                                             style="font-size: x-small; padding: 0.3%;">Entfernen</button>
-                                    </li>                                    
+                                    </li>
                                 </ul>
                             </div>
 
                             <!-- List of completed Tasks -->
                             <div class="col-2">
                                 <ul class="list-group">
-                                    <li class="list-group-item" style="font-weight: bold; background: lightgray; font-size: smaller;">"Username"
+                                    <li class="list-group-item"
+                                        style="font-weight: bold; background: lightgray; font-size: smaller;">"Username"
                                     </li>
                                     <li v-for="n in Tasks.length" :key="n.id" class="list-group-item">
                                         <input type="checkbox" checked>
                                     </li>
-                                </ul>                                
+                                </ul>
                             </div>
                         </div>
                     </div>
