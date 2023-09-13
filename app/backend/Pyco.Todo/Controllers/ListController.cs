@@ -33,7 +33,7 @@ namespace Pyco.Todo.Controllers
                 throw new UnauthorizedException();
             }
 
-            return Ok(_listRepository.Get(user.Id));
+            return Ok(_listRepository.GetByUser(user.Id));
         }
 
         [HttpGet]
