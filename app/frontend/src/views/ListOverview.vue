@@ -2,16 +2,20 @@
 import { ref, onMounted } from 'vue';
 import store from '@/store';
 import ListAdminVue from '../components/ListAdmin.vue'
+import TodoListComponent from '@/components/TodoListComponent.vue';
 import { todo_get } from '@/todoclient';
 import routes from '@/constants/todoroutes'
 
 const dataReady = ref(false);
 let showAdminView = ref(false);
-let componentKey = ref(0)
+let showTodoView = ref(false)
+let adminComponentKey = ref(0)
+let todoComponentKey = ref(0)
 const loggedInUser = ref(store.state.user.username)
 let listTitle = ref('')
 let todoListId = ref(null)
 let listUsers = ref([])
+let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
 
@@ -44,16 +48,26 @@ async function openAdminView(listId){
         createView.value = true
       }
       showAdminView.value = true;
-      forceRerenderer()
+      forceRerenderer(adminComponentKey)
 }
 
-function forceRerenderer(){
-  componentKey.value += 1
+function forceRerenderer(key){
+  key.value += 1
 }
 
-function openTodoList(listId){
+async function openTodoList(listId){
   console.log('We are opening')
-  console.log(listId)
+  let list = await todo_get(routes.LIST, { listId: listId })
+  if(list){
+    listTitle.value = list.title
+    listUsers.value = list.listUsers
+    listItems.value = list.listItems
+    todoListId.value = listId
+    showAdminView.value = false
+    showTodoView.value = true
+    forceRerenderer(todoComponentKey)
+  }
+  console.log(list)
 }
 
 function formatDate(date) {
@@ -94,7 +108,8 @@ function formatDate(date) {
           <button type="button" class="btn btn-success mb-4 w-100" @click="openAdminView(null)">Neue Todo Liste erstellen</button>
         </div>
         <div class="col-md-auto flex-grow-1 pd-2">
-          <ListAdminVue v-if="showAdminView" :key="componentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
+          <ListAdminVue v-if="showAdminView" :key="adminComponentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
+          <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId"/>
           <div v-else class="row d-flex align-items-center justify-content-center h-100">
             <div>
               <div class="row align-items-center justify-content-center">
