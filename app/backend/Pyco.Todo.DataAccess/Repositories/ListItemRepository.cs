@@ -57,14 +57,14 @@ where
             splitOn: "userId",
             map: (object[] objs) =>
             {
-                if(objs.Length != 2
+                if (objs.Length != 2
                 || objs[0] is not int listItemId
                 || objs[1] is not int userId)
                 {
                     return 0;
                 }
 
-                if(!listItemCheckedUsers.TryGetValue(listItemId, out List<int>? userIds)) 
+                if (!listItemCheckedUsers.TryGetValue(listItemId, out List<int>? userIds))
                 {
                     userIds = new List<int>();
                     listItemCheckedUsers.Add(listItemId, userIds);
@@ -75,5 +75,67 @@ where
             });
 
         return listItemCheckedUsers;
+    }
+
+    public int Insert(ListItem list)
+    {
+        const string query = @"
+insert into listItem (listId, typeId, content)
+values (@listId, @typeId, @content)
+returning id;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.QueryFirstOrDefault<int>(query, list);
+    }
+
+    public int Update(ListItem list)
+    {
+        const string query = @"
+update listItem 
+set
+    listId = @listId,
+    typeId = @typeId,
+    content = @content
+where id = @id;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Execute(query, list);
+    }
+
+    public int Archive(int id)
+    {
+        const string query = @"
+update listItem
+set archive = @archive
+where id = @id;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Execute(query, new { id });
+    }
+
+    public int Check(int listItemId, int userId)
+    {
+        const string query = @"
+insert into listItemCheck (listItemId, userId)
+values (@listItemId, @userId)
+on conflict (listItemId, userId) do nothing;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Execute(query, new { listItemId, userId });
+    }
+
+    public int Uncheck(int listItemId, int userId)
+    {
+        const string query = @"
+delete from listItemCheck
+where listItemId = @listItemId and userId = @userId;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Execute(query, new { listItemId, userId });
     }
 }

@@ -3,7 +3,6 @@ using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Core.Exception;
 using Pyco.Todo.Data.Models;
 using Pyco.Todo.DataAccess.Interfaces;
-using System.Collections.Generic;
 
 namespace Pyco.Todo.Controllers
 {
