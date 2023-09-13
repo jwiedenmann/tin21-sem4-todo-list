@@ -24,7 +24,7 @@ const users = ref([])
 const modalHeader = ref('Error!')
 const modalMsg = ref('')
 let showMsg = false
-
+let redirectToHome = ref(false)
 const searchUserResults = ref([])
 
 const UserRoles = {
@@ -55,7 +55,10 @@ function openModal() {
 
 function closeModal() {
     state.modal_error.hide()
-    window.location.reload()
+    if(redirectToHome.value){
+        redirectToHome.value = false
+        window.location.reload()
+    }
 }
 
 async function searchUser(searchTerm) {
@@ -99,6 +102,7 @@ async function createNewList() {
         await todo_post(routes.LIST, null, list)
         modalHeader.value = "List was created"
         modalMsg.value = "The list \"" + list.Title + " \" was successfully created. You can open the list in the menu to the left."
+        redirectToHome.value = true
         openModal();
     }
 }
@@ -118,6 +122,7 @@ async function updateList(){
         await todo_put(routes.LIST, null, list)
         modalHeader.value = "List settings has been updated"
         modalMsg.value = "The list \"" + list.Title + " \" was successfully edited. You can open the list in the menu to the left."
+        redirectToHome.value = true
         openModal();
     }
 }
