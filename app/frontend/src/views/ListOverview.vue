@@ -18,7 +18,6 @@ let listUsers = ref([])
 let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
-
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
   
@@ -114,9 +113,13 @@ function formatDate(date) {
             <div>
               <div class="row align-items-center justify-content-center">
                 <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
-                <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-list-check" style="font-size: 10em;"></i><p>Create a new Todo List!</p></button>
-                <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 10em;"></i><p>Logout</p></button>
-              </div>       
+                <button v-if="todoList" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[0].id)"><i class="fa-solid fa-list-check" style="font-size: 5em;"></i><p>Open your first list</p></button>
+                <button v-if="todoList.length" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[todoList.length -1].id)"><i class="fa-regular fa-clock" style="font-size: 5em;"></i><p>Open your most recent list</p></button>
+              </div> 
+              <div class="row align-items-center justify-content-center">
+                <button  class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-plus" style="font-size: 5em;"></i><p>Create a new Todo List!</p></button>
+                <button  class="p-1 m-1 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 5em;"></i><p>Logout</p></button>
+              </div>         
             </div>         
           </div>
         </div>
