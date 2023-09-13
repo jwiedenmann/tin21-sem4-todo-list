@@ -116,7 +116,7 @@ function updateRole(userId, newRole){
 </script>
 
 <template>
-<div class="listAdmin">
+<div class="listAdmin mt-4">
     <h1>{{ title }}</h1>
     <form id="editTodoListForm">
         <div class="form-group">
