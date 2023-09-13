@@ -32,6 +32,20 @@ public class ListItemController : Controller
         return Ok(_listItemDataProvider.Insert(listItem, user.Id));
     }
 
+    [HttpPut]
+    public IActionResult Update(ListItem listItem)
+    {
+        HttpContext.Items.TryGetValue("User", out object? obj);
+
+        if (obj is null || obj is not User user)
+        {
+            throw new UnauthorizedException();
+        }
+
+        _listItemDataProvider.Update(listItem, user.Id);
+        return Ok();
+    }
+
     [HttpPut("delete")]
     public IActionResult Delete(int listId, int listItemId)
     {
