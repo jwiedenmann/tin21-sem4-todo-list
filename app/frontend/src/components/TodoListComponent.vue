@@ -142,10 +142,10 @@ function EditTask(taskId) {
                         <input v-else type="checkbox">
                     </li>
                 </ul>
-                <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
+                <!-- <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
                     Alle anzeigen
-                </button>
+                </button> -->
             </div>
 
             <div class="col-2">

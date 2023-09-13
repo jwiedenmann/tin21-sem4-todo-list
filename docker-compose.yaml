@@ -31,16 +31,16 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@developer-blog.net
       PGADMIN_DEFAULT_PASSWORD: admin123
-  mqtt-broker:
-    image: eclipse-mosquitto
-    container_name: mqtt-broker
-    ports:
-      - "1883:1883" #mqtt port
-      - "9001:9001" #mqtt port for websockets
-    volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - /log:/mosquitto/log:rw
-networks:
-  default:
-    name: mqtt5-network
+#   mqtt-broker:
+#     image: eclipse-mosquitto
+#     container_name: mqtt-broker
+#     ports:
+#       - "1883:1883" #mqtt port
+#       - "9001:9001" #mqtt port for websockets
+#     volumes:
+#       - ./mosquitto/config:/mosquitto/config
+#       - ./mosquitto/data:/mosquitto/data
+#       - /log:/mosquitto/log:rw
+# networks:
+#   default:
+#     name: mqtt5-network
