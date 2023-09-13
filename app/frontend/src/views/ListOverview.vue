@@ -46,20 +46,13 @@ let todoDataList = ref([
 let todoList = ref([])
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
-  /*
-  if(!allTodoLists.length){
-    n_lists = 1
-    console.log('lol')
-  }else{
-    n_lists = allTodoLists.length
-  }
-  if(!todoList.value.length){
-        for(let i=0; i<n_lists; i++){
-            todoList.value.push({ id: allTodoLists[i].id, title: allTodoLists[i].title, creationDate: allTodoLists[i].creationDate });
+  
+  if(todoList.value.length){
+        for(let list in todoList.value){
+            let date = formatDate(todoList.value[list].creationDate)
+            todoList.value[list].creationDate = date
         }
     }
-    */
-  todoList.value.creationDate = formatDate(todoList.value.creationDate)
   console.log(todoList)
   dataReady.value = true;
 })
@@ -108,7 +101,7 @@ function formatDate(date) {
             style="background-color: #54B4D3;">{{ loggedInUser }}</div>
           <div  v-if="dataReady">
             <ul class="list-group">
-              <li v-for="todo in todoDataList" v-bind:key="todo.id">
+              <li v-for="todo in todoList" v-bind:key="todo.id">
                 <div class="row p-4 list-group-item flex-column align-items-start rounded-3" >
                   <div class="d-flex justify-content-between">
                     <h5 class="mb-1">{{ todo.title }}</h5>
@@ -116,15 +109,6 @@ function formatDate(date) {
                     <button type="button" class="btn btn-outline-secondary p-2 w-25 float-right" @click="openAdminView(todo.id)"><i class="fa-solid fa-gear"></i></button>
                   </div>
                 </div>               
-              </li>
-              <li>
-                <div class="row p-4 list-group-item flex-column align-items-start" >
-                  <div class="d-flex justify-content-between">
-                    <h5 class="mb-1">{{ todoList.title }}</h5>
-                    <small>{{ todoList.creationDate }}</small>
-                    <button type="button" class="btn btn-outline-secondary p-2 w-25 float-right"  @click="openAdminView(todoList.id)"><i class="fa-solid fa-gear"></i></button>
-                  </div>                  
-                </div>
               </li>
             </ul>
           </div>
@@ -134,11 +118,10 @@ function formatDate(date) {
         <div class="col-md-auto flex-grow-1 pd-2">
           <ListAdminVue v-if="showAdminView" :key="componentKey" :list-title="listTitle" :list-users="listUsers"/>
           <div v-else class="row d-flex align-items-center justify-content-center h-100">
-            <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
-            <div class="p-2 m-2"><i class="fa-solid fa-list-check" style="font-size: 10em;"></i></div>
-            <div class="d-flex align-items-center justify-content-center">
-              <button type="button" class="btn btn-outline-success w-25 p-2 m-2 rounded-2" @click="openAdminView(null)">Neue Todo Liste erstellen</button>
-            </div>
+            <div>
+              <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
+              <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-list-check" style="font-size: 10em;"></i><p>Create a new Todo List!</p></button>
+            </div>         
           </div>
         </div>
       </div>
