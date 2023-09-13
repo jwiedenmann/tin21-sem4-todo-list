@@ -94,7 +94,6 @@ async function createNewList() {
         modalMsg.value = "Please make sure to select at least one user that has access to the Todo list."
         openModal();
     } else {
-        //TODO add the listUsers to the list object
         let list = { Title: listTitle, ListUsers: listUsers }
         await todo_post(routes.LIST, null, list)
     }
@@ -114,7 +113,7 @@ function updateRole(userId, newRole) {
 </script>
 
 <template>
-    <div class="listAdmin">
+    <div class="listAdmin mt-4">
         <h1>{{ title }}</h1>
         <form id="editTodoListForm">
             <div class="form-group">
@@ -212,5 +211,4 @@ function updateRole(userId, newRole) {
 
 .search-bar {
     margin-top: 2em;
-}
-</style>
+}</style>
