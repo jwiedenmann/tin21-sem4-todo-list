@@ -6,9 +6,8 @@
 # Custom
 *.bkp
 *.dtmp
+mosquitto.db
 .DS_Store
-dist/
-wwwroot/
 coverage/
 /tests/e2e/videos/
 /tests/e2e/screenshots/

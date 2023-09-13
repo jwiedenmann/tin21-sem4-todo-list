@@ -1,0 +1,39 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="w-100 py-5" style="background-image: url('Assets/search-background.svg');background-size: cover;
+background-position-x: center">
+    <h1 class="text-center fw-bold py-5">You´r Welcome to manage your Time</h1>
+    <form method="get" name="formSearch" asp-area="Search">
+        <div class="input-group">
+            <input type="text" class="form-control" name="searchText" placeholder="Aufgaben für Zuhause...">
+            <input type="submit" class="btn btn-secondary" value="Search">
+        </div>
+    </form>
+</div>
+<div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 py-5">
+    <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+             style="background-image: url('Assets/timetower.jpg');background-size: cover;">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                    Du möchtest sehen, welche TODO´s
+                    dir zugewießen sind?
+                </h3>
+                <a class="btn btn-secondary mt-auto" asp-area="TodoLists" asp-page="/Index">TODO-Listen anzeigen</a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+             style="background-image: url('Assets/timehead.jpg');background-size: cover;">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-black text-shadow-1">
+                <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Du hast noch keinen PYCO Account?</h3>
+                <a class="btn btn-secondary mt-auto" asp-area="UserRegistration" asp-page="/Index">Benutzerregistrierung</a>
+            </div>
+        </div>
+    </div>
+</div>
