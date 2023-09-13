@@ -10,40 +10,11 @@ let showAdminView = ref(false);
 let componentKey = ref(0)
 const loggedInUser = ref(store.state.user.username)
 let listTitle = ref('')
+let todoListId = ref(null)
 let listUsers = ref([])
-let todoDataList = ref([
-          {
-            "id": 1,
-            "title": "Meine erste Todo",
-            "creationDate": "2022-04-01",
-            "role": "admin"
-          },
-          {
-            "id": 2,
-            "title": "Noch eine Todo",
-            "creationDate": "2022-07-01",
-            "role": "admin"
-          },
-          {
-            "id": 3,
-            "title": "Hausaufgaben",
-            "creationDate": "2023-04-01",
-            "role": "user"
-          },
-          {
-            "id": 4,
-            "title": "Bucket List",
-            "creationDate": "2023-09-10",
-            "role": "admin"
-          },
-          {
-            "id": 5,
-            "title": "Einkaufsliste",
-            "creationDate": "2012-04-01",
-            "role": "readOnly"
-          }
-        ])
+let createView = ref(false)
 let todoList = ref([])
+
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
   
@@ -63,12 +34,14 @@ async function openAdminView(listId){
 
         listTitle.value = list.title
         listUsers.value = list.listUsers
-        console.log(listUsers)
+        todoListId.value = listId
+        createView.value = false
       }else {
         let user = store.state.user
         listUsers.value = []
         listUsers.value.push({ id: user.id, username: user.username, listUserRole: 1 });
         listTitle.value = "New Todo List"
+        createView.value = true
       }
       showAdminView.value = true;
       forceRerenderer()
@@ -76,6 +49,11 @@ async function openAdminView(listId){
 
 function forceRerenderer(){
   componentKey.value += 1
+}
+
+function openTodoList(listId){
+  console.log('We are opening')
+  console.log(listId)
 }
 
 function formatDate(date) {
@@ -102,12 +80,12 @@ function formatDate(date) {
           <div  v-if="dataReady">
             <ul class="list-group">
               <li v-for="todo in todoList" v-bind:key="todo.id">
-                <div class="row p-4 list-group-item flex-column align-items-start rounded-3" >
+                <div class="row p-4 list-group-item flex-column align-items-start rounded-3 list-overview-item" @click="openTodoList(todo.id)">
                   <div class="d-flex justify-content-between">
                     <h5 class="mb-1">{{ todo.title }}</h5>
-                    <small>{{ todo.creationDate }}</small>
-                    <button type="button" class="btn btn-outline-secondary p-2 w-25 float-right" @click="openAdminView(todo.id)"><i class="fa-solid fa-gear"></i></button>
+                    <button type="button" class="btn btn-outline-secondary p-2 w-25 float-right" @click.stop="openAdminView(todo.id)"><i class="fa-solid fa-gear"></i></button>
                   </div>
+                  <small>{{ todo.creationDate }}</small>
                 </div>               
               </li>
             </ul>
@@ -116,11 +94,14 @@ function formatDate(date) {
           <button type="button" class="btn btn-success mb-4 w-100" @click="openAdminView(null)">Neue Todo Liste erstellen</button>
         </div>
         <div class="col-md-auto flex-grow-1 pd-2">
-          <ListAdminVue v-if="showAdminView" :key="componentKey" :list-title="listTitle" :list-users="listUsers"/>
+          <ListAdminVue v-if="showAdminView" :key="componentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
           <div v-else class="row d-flex align-items-center justify-content-center h-100">
             <div>
-              <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
-              <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-list-check" style="font-size: 10em;"></i><p>Create a new Todo List!</p></button>
+              <div class="row align-items-center justify-content-center">
+                <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
+                <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-list-check" style="font-size: 10em;"></i><p>Create a new Todo List!</p></button>
+                <button id="newListBig" class="p-2 m-2 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 10em;"></i><p>Logout</p></button>
+              </div>       
             </div>         
           </div>
         </div>
@@ -133,4 +114,15 @@ function formatDate(date) {
 ul {
   list-style-type: none;
 }
+.list-overview-item:hover {
+  background-color:rgb(226, 226, 226);
+  cursor: pointer;
+  color: #494949 !important;
+  border: 0.1em solid;
+  border-radius: 50px;
+  border-color: #494949 !important;
+  transition: all 0.3s ease 0s;
+}
+
+
 </style>

@@ -105,7 +105,7 @@ on conflict (listId, userId) do nothing;";
     {
         const string query = @"
 update list
-set titel = @title
+set title = @title
 where id = @id;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
