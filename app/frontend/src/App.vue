@@ -13,6 +13,11 @@ store.commit('updateJwtToken', jwtToken);
       </a>
     </header>
     <router-view />
+    <footer class="text-center pt-3 text-body-secondary border-top">
+    <p>
+      &copy; 2023
+    </p>
+  </footer>
   </div>
 </template>
 
