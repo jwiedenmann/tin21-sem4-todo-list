@@ -1,12 +1,22 @@
 <script setup>
 // ----- IMPORTS -----
 
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineProps } from 'vue'
 import { todo_get } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import store from '@/store';
 
 // ----- CONSTS -----
+
+const props = defineProps({
+    listTitle: {
+        type: String,
+        required: true
+    },
+    listId: Number,
+    listUsers: Array,
+    listItems: Array
+})
 
 let TaskId = 0
 let UserId = 0
@@ -19,30 +29,23 @@ const TodoName = ref('')
 
 const Tasks = ref([])
 const Users = ref([])
-let numbers = [3, 4, 3, 2, 3, 3, 7]
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
     currentUserId.value = store.state.user.id
-    let newList = await todo_get(routes.LIST, { listId: 1 })
-    let lis = newList.listItems
-    let checkedUsers = lis[0].checkedByUserIds
-    let lisUsers = newList.listUsers
-    TodoName.value = newList.title
+    let lisUsers = props.listUsers
+    let todoListItems = props.listItems
+    TodoName.value = props.listTitle
 
-    let nasd = lis[0].checkedByUserIds.length
-
-    if (lis[0].checkedByUserIds.includes(3)) nasd = 3;
-
-    for (let i = 0; i < lis.length; i++) {
+    for (let i = 0; i < todoListItems.length; i++) {
         let checkedByCurrentUser = false
-        if (lis[i].checkedByUserIds.includes(currentUserId)) checkedByCurrentUser = true;
+        if (todoListItems[i].checkedByUserIds.includes(currentUserId)) checkedByCurrentUser = true;
 
-        console.log(lis[i].content);
+        console.log(todoListItems[i].content);
         Tasks.value.push({
             id: TaskId++,
-            text: lis[i].content,
-            checkedSum: lis[i].checkedByUserIds.length,
+            text: todoListItems[i].content,
+            checkedSum: todoListItems[i].checkedByUserIds.length,
             isCheckedByCurrentUser: checkedByCurrentUser
         })
     }
@@ -80,8 +83,6 @@ function CreateTask() {
 
 function DeleteTask(taskText) {
     Tasks.value = Tasks.value.filter(tasks => tasks.text != taskText)
-
-    // Tasks.value.splice(taskId, 1);
 }
 
 function EditTask(taskId) {
@@ -92,8 +93,8 @@ function EditTask(taskId) {
 </script>
 
 <template>
-    <div class="container">
-        <h2>{{ TodoName }}</h2>
+    <div class="container mt-4">
+        <h1>{{ TodoName }}</h1>
 
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
@@ -131,10 +132,10 @@ function EditTask(taskId) {
                         <input v-else type="checkbox">
                     </li>
                 </ul>
-                <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
+                <!-- <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
                     Alle anzeigen
-                </button>
+                </button> -->
             </div>
 
             <div class="col-2">
@@ -153,7 +154,7 @@ function EditTask(taskId) {
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Details to {{ TodoName }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -180,8 +181,8 @@ function EditTask(taskId) {
                             <!-- List of completed Tasks -->
                             <div class="col-2">
                                 <ul class="list-group">
-                                    <li class="list-group-item"
-                                        style="font-weight: bold; background: lightgray; font-size: smaller;">"Username"
+                                    <li class="list-group-item" style="font-weight: bold; background: lightgray; font-size: smaller;">
+                                        {{ currentUser }}
                                     </li>
                                     <li v-for="n in Tasks.length" :key="n.id" class="list-group-item">
                                         <input type="checkbox" checked>
