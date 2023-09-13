@@ -65,7 +65,8 @@ CREATE TABLE ListUser (
     userId integer REFERENCES "user"(id),
     roleId integer NOT NULL REFERENCES "role"(id),
     archive boolean NOT NULL DEFAULT false,
-    creationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    creationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT listUser_PKEY PRIMARY KEY(listId, userId)
 );
 
 -- Add list item types

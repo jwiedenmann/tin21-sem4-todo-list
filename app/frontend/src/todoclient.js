@@ -1,6 +1,7 @@
 import store from '@/store';
 import routes from '@/constants/todoroutes'
 import axios from 'axios'
+import qs from 'qs'
 
 export async function todo_get(route, parameters) {
     return await request(route, parameters, null, 0);
@@ -56,7 +57,14 @@ async function request(route, parameters, body, httpMethod) {
 
 async function get(route, parameters) {
     try {
-        let resp = await axios.get(route, { params: parameters });
+        let resp = await axios.get(route, {
+            params: parameters,
+            paramsSerializer: {
+                serialize: (params) => {
+                    return qs.stringify(params, { arrayFormat: 'repeat' })
+                }
+            }
+        });
         return resp;
     } catch (error) {
         return error.response;
@@ -65,7 +73,15 @@ async function get(route, parameters) {
 
 async function post(route, parameters, body) {
     try {
-        let resp = await axios.post(route, body, { params: parameters, withCredentials: true });
+        let resp = await axios.post(route, body, {
+            params: parameters,
+            paramsSerializer: {
+                serialize: (params) => {
+                    return qs.stringify(params, { arrayFormat: 'repeat' })
+                }
+            },
+            withCredentials: true
+        });
         return resp;
     } catch (error) {
         return error.response;
@@ -74,7 +90,15 @@ async function post(route, parameters, body) {
 
 async function put(route, parameters, body) {
     try {
-        let resp = await axios.put(route, body, { params: parameters, withCredentials: true });
+        let resp = await axios.put(route, body, {
+            params: parameters,
+            paramsSerializer: {
+                serialize: (params) => {
+                    return qs.stringify(params, { arrayFormat: 'repeat' })
+                }
+            },
+            withCredentials: true
+        });
         return resp;
     } catch (error) {
         return error.response;

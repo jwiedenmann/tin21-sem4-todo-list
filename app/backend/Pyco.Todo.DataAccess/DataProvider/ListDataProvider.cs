@@ -29,7 +29,17 @@ public class ListDataProvider : IListDataProvider
         if (list is null) return null;
 
         IEnumerable<ListItem> listItems = _listItemRepository.Get(listId);
+        Dictionary<int, List<int>> listItemChecks = _listItemRepository.GetListItemChecks(listId);
         IEnumerable<User> listUser = _userRepository.GetListUsers(listId);
+
+        foreach (var item in listItems)
+        {
+            if(listItemChecks.TryGetValue(item.ListId, out List<int>? listChecks) &&
+                listChecks is not null)
+            {
+                item.CheckedByUserIds = listChecks;
+            }
+        }
 
         list.ListItems = listItems.ToList() ?? new List<ListItem>();
         list.ListUsers = listUser.ToList() ?? new List<User>();

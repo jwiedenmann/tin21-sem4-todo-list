@@ -26,10 +26,10 @@ let showMsg = false
 const searchUserResults = ref([])
 
 const UserRoles = {
-    0: "None",
-    1: "ListAdmin",
-    2: "ListUser",
-    3: "ReadOnly"
+    "None": 0,
+    "ListAdmin": 1,
+    "ListUser": 2,
+    "ReadOnly": 3
 }
 const state = reactive({
     modal_error: null,
@@ -42,7 +42,7 @@ onMounted(() => {
 
     if (!users.value.length && sharedUsers.length) {
         for (let i = 0; i < props.listUsers.length; i++) {
-            users.value.push({ Id: sharedUsers[i].id, Username: sharedUsers[i].username, ListUserRole: Object.values(UserRoles)[sharedUsers[i].listUserRole] });
+            users.value.push({ Id: sharedUsers[i].id, Username: sharedUsers[i].username, ListUserRole: sharedUsers[i].listUserRole });
         }
     }
 })
@@ -68,7 +68,7 @@ async function searchUser(searchTerm) {
 
 function addUser(user) {
     if (user.username && !users.value.some(u => u.Username === user.username)) {
-        users.value.push({ Id: user.id, Username: user.username, ListUserRole: "ListAdmin" });
+        users.value.push({ Id: user.id, Username: user.username, ListUserRole: UserRoles["ListAdmin"] });
         console.log(users)
     } else {
         modalHeader.value = "User already added!"
@@ -94,8 +94,7 @@ async function createNewList() {
         modalMsg.value = "Please make sure to select at least one user that has access to the Todo list."
         openModal();
     } else {
-        //TODO add the listUsers to the list object
-        let list = { Title: listTitle }
+        let list = { Title: listTitle, ListUsers: listUsers }
         await todo_post(routes.LIST, null, list)
     }
 }
@@ -106,7 +105,7 @@ function updateRole(userId, newRole) {
     if (userId && newRole) {
         let userIndex = users.value.findIndex(u => u.Id == userId)
         console.log("Before Update: ", users.value[userIndex])
-        users.value[userIndex].ListUserRole = newRole
+        users.value[userIndex].ListUserRole = parseInt(newRole)
         console.log("After update: ", users.value[userIndex])
     }
 }
