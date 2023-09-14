@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Pyco.Todo.Core.Authorization;
+using Pyco.Todo.Core.Mqtt;
 using Pyco.Todo.Data.Jwt;
 using Pyco.Todo.DataAccess.DataProvider;
 using Pyco.Todo.DataAccess.Interfaces;
@@ -13,7 +14,14 @@ public static class IServiceCollectionExtensions
     {
         AddRepositories(services);
         AddAuthentication(services, configuration);
+        AddMqtt(services, configuration);
+
         return services;
+    }
+
+    private static void AddMqtt(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<MqttHelper>();
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
