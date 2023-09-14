@@ -50,10 +50,6 @@ let connection = {
         connected: false,
       }
 */
-function getRandomInt(min, max) {
-  return Math.floor(min + Math.random() * Math.floor(max - min));
-}
-
 const { protocol, host, port, endpoint, ...options } = connection;
         const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 console.log(connectUrl)
@@ -74,16 +70,12 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
   // message is Buffer
   console.log("Received:" + message.toString())
-  window.location.reload()
+  if(topic.startsWith(topics.USER_TOPIC)){
+    window.location.reload()
+  }
   // to end the connection:
   //client.end()
 })
-
-function postMessage() {
-  console.log("Sending message...")
-  // the publish function will send the message to the defined topic
-  client.publish(topics.USER_TOPIC + store.state.user.id, 'My message: ' + Math.random() + ' - from user: ' + store.state.user.id)
-}
 
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
@@ -116,16 +108,6 @@ async function openAdminView(listId){
       showAdminView.value = true;
       forceRerenderer(adminComponentKey)
 }
-
-function initData(){ 
-      client = {
-        connected: false,
-      }
-      retryTimes = 0
-      connecting = false
-      subscribeSuccess = false  
-}
-
 
 function forceRerenderer(key){
   key.value += 1
@@ -188,7 +170,7 @@ function formatDate(date) {
         </div>
         <div class="col-md-auto flex-grow-1 pd-2">
           <ListAdminVue v-if="showAdminView" :key="adminComponentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
-          <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId"/>
+          <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId" @reload-todos="openTodoList"/>
           <div v-else class="row d-flex align-items-center justify-content-center h-100">
             <div>
               <div class="row align-items-center justify-content-center">
