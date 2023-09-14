@@ -206,7 +206,6 @@ async function OnUnCheck(taskId, taskIdInDB) {
 <template>
     <div class="container mt-4" :key="componentKey">
         <h1>{{ TodoName }}</h1>
-        <button @click="forceRerender">Test</button>
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
             <input v-model="task" type="Content" placeholder="Neues Todo hinzufügen" class="form-control">

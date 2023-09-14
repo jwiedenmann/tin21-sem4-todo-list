@@ -91,6 +91,7 @@ onMounted( async ()=> {
 })
 
 async function openAdminView(listId){
+  let role = 0
   if(listId){
         let list = await todo_get(routes.LIST, { listId: listId })
 
@@ -98,6 +99,9 @@ async function openAdminView(listId){
         listUsers.value = list.listUsers
         todoListId.value = listId
         createView.value = false
+
+        var resultIsAdmin = list.listUsers.find(user => user.id === parseInt(store.state.user.id))
+        role = resultIsAdmin.listUserRole
       }else {
         let user = store.state.user
         listUsers.value = []
@@ -105,8 +109,13 @@ async function openAdminView(listId){
         listTitle.value = "New Todo List"
         createView.value = true
       }
-      showAdminView.value = true;
-      forceRerenderer(adminComponentKey)
+      if(role == 1){
+        showAdminView.value = true;
+        forceRerenderer(adminComponentKey)
+      }else{
+        //TODO implement Modal message that you dont have the rights to do this
+      }
+      
 }
 
 function forceRerenderer(key){
