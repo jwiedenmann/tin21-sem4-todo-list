@@ -46,8 +46,43 @@ let connection = {
         username: "user1",
         password: "1234",
 }
-let client = {
+/*let client = {
         connected: false,
+      }
+*/
+function getRandomInt(min, max) {
+  return Math.floor(min + Math.random() * Math.floor(max - min));
+}
+
+const { protocol, host, port, endpoint, ...options } = connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+console.log(connectUrl)
+let client = mqtt.connect(connectUrl, options)
+
+client.on('connect', function () {
+  // subscribe to a topic to receive message from it
+  client.subscribe(topics.USER_TOPIC + store.state.user.id, function (err) {
+    if (!err) {
+      console.log('Connected and subscribed to topic: ' + topics.USER_TOPIC + store.state.user.id)
+      // after connection is success - send hello:
+      //client.publish(topics.USER_TOPIC + store.state.user.id, 'Hello mqtt from user:' + store.state.user.id)
+    }
+  })
+})
+
+// What should happen if I recive a message?
+client.on('message', function (topic, message) {
+  // message is Buffer
+  console.log("Received:" + message.toString())
+  window.location.reload()
+  // to end the connection:
+  //client.end()
+})
+
+function postMessage() {
+  console.log("Sending message...")
+  // the publish function will send the message to the defined topic
+  client.publish(topics.USER_TOPIC + store.state.user.id, 'My message: ' + Math.random() + ' - from user: ' + store.state.user.id)
 }
 
 onMounted( async ()=> {
@@ -60,8 +95,6 @@ onMounted( async ()=> {
         }
     }
   console.log(todoList)
-  createConnection()
-  subscribeToTopic()
   dataReady.value = true;
 })
 
@@ -84,14 +117,6 @@ async function openAdminView(listId){
       forceRerenderer(adminComponentKey)
 }
 
-function subscribeToTopic(){
-  const topic = topics.USER_TOPIC;
-  console.log(`Subscribing to Topic: ${topic}`);
-
-  client.subscribe(topic, { qos: 0 });
-  statusMsg.value = "SUBSCRIBED";
-}
-
 function initData(){ 
       client = {
         connected: false,
@@ -101,46 +126,7 @@ function initData(){
       subscribeSuccess = false  
 }
 
-function createConnection() {
-      try {
-        connecting = true;
-        const { protocol, host, port, endpoint, ...options } = connection;
-        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
-        client = mqtt.connect(connectUrl, options);
-        if (client.on) {
-          client.on("connect", () => {
-            connecting = false;
-            console.log("Connection succeeded!");
-          });
-          client.on("reconnect", handleOnReConnect);
-          client.on("error", (error) => {
-            console.log("Connection failed", error);
-          });
-          client.on("message", (topic, message) => {
-            receiveNews = receiveNews.concat(message);
-            console.log(`Received message ${message} from topic ${topic}`);
-            
-          });
-        }
-        console.log('Connection succeeded')
-      } catch (error) {
-        connecting = false;
-        console.log("mqtt.connect error", error);
-      }
-}
 
-function handleOnReConnect() {
-      retryTimes += 1;
-      if (retryTimes > 5) {
-        try {
-          client.end();
-          initData();
-          statusMsg.value = "Connection maxReconnectTimes limit, stop retry"
-        } catch (error) {
-          statusMsg.value = error.toString();
-        }
-      }
-    }
 function forceRerenderer(key){
   key.value += 1
 }
