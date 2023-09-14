@@ -184,7 +184,7 @@ function formatDate(date) {
             <div>
               <div class="row align-items-center justify-content-center">
                 <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
-                <button v-if="todoList" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[0].id)"><i class="fa-solid fa-list-check" style="font-size: 5em;"></i><p>Open your first list</p></button>
+                <button v-if="todoList.length" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[0].id)"><i class="fa-solid fa-list-check" style="font-size: 5em;"></i><p>Open your first list</p></button>
                 <button v-if="todoList.length" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[todoList.length -1].id)"><i class="fa-regular fa-clock" style="font-size: 5em;"></i><p>Open your most recent list</p></button>
               </div> 
               <div class="row align-items-center justify-content-center">
