@@ -2,7 +2,7 @@
 // ----- IMPORTS -----
 
 import { onMounted, ref, defineProps } from 'vue'
-import { todo_get } from '@/todoclient'
+import { todo_get, todo_post, todo_put } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import store from '@/store';
 
@@ -18,86 +18,136 @@ const props = defineProps({
     listItems: Array
 })
 
-let TaskId = 0
-let UserId = 0
 const currentUser = ref('')
 const currentUserId = ref(0)
+const currentListId = ref(0)
+const currentRole = ref(0)
 const task = ref('')
 let editedTaskId = null
+let editedTaskIdinDB = null
+let TaskIdCunt = 0
 
 const TodoName = ref('')
 
 const Tasks = ref([])
 const Users = ref([])
-let numbers = [3, 4, 3, 2, 3, 3, 7]
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
-    currentUserId.value = store.state.user.id
-    //let newList = await todo_get(routes.LIST, { listId: 1 })
-    //let lis = newList.listItems
-    //let checkedUsers = lis[0].checkedByUserIds
-    let lisUsers = props.listUsers
+    currentUserId.value = parseInt(store.state.user.id)
+    currentListId.value = props.listId
     let todoListItems = props.listItems
     TodoName.value = props.listTitle
-    
-    //let nasd = lis[0].checkedByUserIds.length
 
-    //if (lis[0].checkedByUserIds.includes(3)) nasd = 3;
+    var resultIsAdmin = props.listUsers.find(user => user.id === currentUserId.value)
+    currentRole.value = resultIsAdmin.listUserRole
 
     for (let i = 0; i < todoListItems.length; i++) {
         let checkedByCurrentUser = false
-        if (todoListItems[i].checkedByUserIds.includes(currentUserId)) checkedByCurrentUser = true;
+        if (todoListItems[i].checkedByUserIds.indexOf(currentUserId.value) >= 0) checkedByCurrentUser = true;
 
         console.log(todoListItems[i].content);
         Tasks.value.push({
-            id: TaskId++,
-            text: todoListItems[i].content,
+            id: todoListItems[i].id,
+            idInFrontendList: TaskIdCunt++,
+            Content: todoListItems[i].content,
             checkedSum: todoListItems[i].checkedByUserIds.length,
             isCheckedByCurrentUser: checkedByCurrentUser
         })
     }
 
-    for (let i = 0; i < lisUsers.length; i++) {
-        console.log(lisUsers[i].username);
+    for (let i = 0; i < props.listUsers.length; i++) {
+        console.log(props.listUsers[i].username);
         Users.value.push({
-            id: UserId++,
-            name: lisUsers[i].username,
-            role: 'user',
-            done: true
+            id: props.listUsers[i].id,
+            name: props.listUsers[i].username,
+            role: props.listUsers[i].listUserRole
         })
     }
 })
 
-function CreateTask() {
+async function CreateTask() {
+    if (currentRole.value != 1) {
+        task.value = "You can not add Taks, cuz your not a Admin lol"
+        return;
+    }
+
     console.log(task.value)
     if (task.value.length === 0) return;
 
     if (editedTaskId === null) {
+        let createdTask = {
+            ListId: props.listId,
+            TypeId: 1,
+            Content: task.value,
+        }
+
+        let taskId = await todo_post(routes.LIST_ITEM, null, createdTask)
+
         Tasks.value.push({
-            id: TaskId++,
-            text: task.value,
+            id: taskId,
+            idInFrontendList: TaskIdCunt++,
+            Content: task.value,
             checkedSum: 0,
             isCheckedByCurrentUser: false
         })
     }
     else {
-        Tasks.value[editedTaskId].text = task.value;
+        Tasks.value[editedTaskId].Content = task.value;
+
+        let editedTask = {
+            Id: editedTaskIdinDB,
+            ListId: props.listId,
+            TypeId: 1,
+            Content: task.value,
+        }
+
+        await todo_put(routes.LIST_ITEM, null, editedTask)
+
         editedTaskId = null;
+        editedTaskIdinDB = null;
     }
 
-    task.value = '';
+    task.value = ''
 }
 
-function DeleteTask(taskText) {
-    Tasks.value = Tasks.value.filter(tasks => tasks.text != taskText)
-
-    // Tasks.value.splice(taskId, 1);
+async function DeleteTask(taskContent, taskId) {
+    if (currentRole.value != 1) return;
+    Tasks.value = Tasks.value.filter(tasks => tasks.Content != taskContent)
+    await todo_put(routes.LIST_ITEM_DELETE, null, { ListId: props.listId, Id: taskId })
 }
 
-function EditTask(taskId) {
-    task.value = Tasks.value[taskId].text;
+async function EditTask(taskId, taskIdInDB) {
+    if (currentRole.value != 1) return;
+    task.value = Tasks.value[taskId].Content;
     editedTaskId = taskId;
+    editedTaskIdinDB = taskIdInDB;
+}
+
+async function OnCheck(taskId, taskIdInDB) {
+    let checkedTask = {
+        Id: taskIdInDB,
+        ListId: props.listId,
+        TypeId: 1
+    }
+
+    await todo_put(routes.LIST_ITEM_CHECK, null, checkedTask)
+
+    Tasks.value[taskId].isCheckedByCurrentUser = true
+    Tasks.value[taskId].checkedSum++
+}
+
+async function OnUnCheck(taskId, taskIdInDB) {
+    let unCheckedTask = {
+        Id: taskIdInDB,
+        ListId: props.listId,
+        TypeId: 1
+    }
+
+    await todo_put(routes.LIST_ITEM_UNCHECK, null, unCheckedTask)
+
+    Tasks.value[taskId].isCheckedByCurrentUser = false
+    Tasks.value[taskId].checkedSum--
 }
 
 </script>
@@ -108,7 +158,7 @@ function EditTask(taskId) {
 
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
-            <input v-model="task" type="text" placeholder="Neues Todo hinzufügen" class="form-control">
+            <input v-model="task" type="Content" placeholder="Neues Todo hinzufügen" class="form-control">
             <button v-if="editedTaskId != null" @click="CreateTask" class="btn btn-primary">Edit</button>
             <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
         </div>
@@ -121,12 +171,12 @@ function EditTask(taskId) {
                     <li class="list-group-item" style="font-weight: bold; background: lightgray;">Tasks:</li>
                     <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
                         <!-- Task value -->
-                        {{ todo.text }}
+                        {{ todo.Content }}
 
-                        <button @click="EditTask(todo.id)" class="btn btn-secondary"
+                        <button v-if="currentRole === 1" @click="EditTask(todo.idInFrontendList, todo.id)" class="btn btn-secondary"
                             style="font-size: x-small; padding: 0.3%; margin-right: 3px; margin-left: 20px;">Edit</button>
                         <!-- Delete Button -->
-                        <button @click="DeleteTask(todo.text)" class="btn btn-danger"
+                        <button v-if="currentRole === 1" @click="DeleteTask(todo.Content, todo.id)" class="btn btn-danger"
                             style="font-size: x-small; padding: 0.3%;">Entfernen</button>
                     </li>
                     <li class="list-group-item" v-show="Tasks.length === 0">Keine Tasks vorhanden</li>
@@ -138,8 +188,10 @@ function EditTask(taskId) {
                 <ul class="list-group">
                     <li class="list-group-item" style="font-weight: bold; background: lightgray">{{ currentUser }}</li>
                     <li v-for="todos in Tasks" :key="todos.id" class="list-group-item">
-                        <input v-if="todos.checkedByCurrentUser" type="checkbox" checked>
-                        <input v-else type="checkbox">
+                        <button @click="OnUnCheck(todos.idInFrontendList, todos.id)" v-if="todos.isCheckedByCurrentUser"
+                            class="btn btn-success" style="font-size: x-small; padding: 0.3%;">Done</button>
+                        <button @click="OnCheck(todos.idInFrontendList, todos.id)" v-else class="btn btn-primary"
+                            style="font-size: x-small; padding: 0.3%;">Abhacken</button>
                     </li>
                 </ul>
                 <!-- <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
@@ -177,7 +229,7 @@ function EditTask(taskId) {
                                     </li>
                                     <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
                                         <!-- Task value -->
-                                        {{ todo.text }}
+                                        {{ todo.Content }}
 
                                         <button @click="EditTask(todo.id)" class="btn btn-secondary"
                                             style="font-size: x-small; padding: 0.3%; margin-right: 3px; margin-left: 20px;">Edit</button>
@@ -191,7 +243,8 @@ function EditTask(taskId) {
                             <!-- List of completed Tasks -->
                             <div class="col-2">
                                 <ul class="list-group">
-                                    <li class="list-group-item" style="font-weight: bold; background: lightgray; font-size: smaller;">
+                                    <li class="list-group-item"
+                                        style="font-weight: bold; background: lightgray; font-size: smaller;">
                                         {{ currentUser }}
                                     </li>
                                     <li v-for="n in Tasks.length" :key="n.id" class="list-group-item">

@@ -58,7 +58,7 @@ public class ListItemController : Controller
     }
 
     [HttpPut("delete")]
-    public async Task<IActionResult> Delete(int listId, int listItemId)
+    public async Task<IActionResult> Delete(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -67,13 +67,13 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Archive(listItemId, listId, user.Id);
-        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listId, string.Empty);
+        _listItemDataProvider.Archive(listItem.Id, listItem.ListId, user.Id);
+        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listItem.ListId, string.Empty);
         return Ok();
     }
 
     [HttpPut("check")]
-    public async Task<IActionResult> Check(int listId, int listItemId)
+    public async Task<IActionResult> Check(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -82,13 +82,13 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Check(listId, listItemId, user.Id, true);
-        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listId, string.Empty);
+        _listItemDataProvider.Check(listItem.ListId, listItem.Id, user.Id, true);
+        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listItem.ListId, string.Empty);
         return Ok();
     }
 
     [HttpPut("uncheck")]
-    public async Task<IActionResult> Uncheck(int listId, int listItemId)
+    public async Task<IActionResult> Uncheck(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -97,8 +97,8 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Check(listId, listItemId, user.Id, false);
-        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listId, string.Empty);
+        _listItemDataProvider.Check(listItem.ListId, listItem.Id, user.Id, false);
+        await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listItem.ListId, string.Empty);
         return Ok();
     }
 }
