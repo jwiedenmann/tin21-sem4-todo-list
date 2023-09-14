@@ -109,12 +109,10 @@ async function openAdminView(listId){
         listTitle.value = "New Todo List"
         createView.value = true
       }
-      if(role == 1){
+
         showAdminView.value = true;
         forceRerenderer(adminComponentKey)
-      }else{
-        //TODO implement Modal message that you dont have the rights to do this
-      }
+ 
       
 }
 
