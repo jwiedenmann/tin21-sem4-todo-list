@@ -118,7 +118,7 @@ function formatDate(date) {
               </div> 
               <div class="row align-items-center justify-content-center">
                 <button  class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-plus" style="font-size: 5em;"></i><p>Create a new Todo List!</p></button>
-                <button  class="p-1 m-1 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 5em;"></i><p>Logout</p></button>
+                <a href="http://localhost:5000/" class="p-1 m-1 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 5em;"></i><p>Logout</p></a>
               </div>         
             </div>         
           </div>

@@ -1,4 +1,76 @@
 ﻿@page
 @model Pyco.Todo.Areas.Registration.Pages.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
+    ViewData["Title"] = "Nutzerregistrierung";
+    Layout = "_Layout";
 }
+
+@if (Model.FormResult.Length > 0)
+{
+    <p class="alert alert-info mt-4" id="addProductInfoMsg">@Model.FormResult</p>
+}
+<form method="post" class="needs-validation bg-white rounded-4 shadow p-3 mb-5 mt-4 rounded" id="formUserRegistration" asp-area="Registration" asp-page="Index" name="formUserRegistration" novalidate>
+    <h1 class="text-center mt-4">Registrierung</h1>
+    <div class="row g-3">
+        <div class="col-12">
+            <p class="fs-5">
+                Bitte füllen Sie die unten aufgeführten Felder mit Ihren Nutzerdaten aus.<br />
+                Nach der erfolgreichen Registrierung Ihres Nutzerkontos, können Sie Kommentare zu Proukten verfassen, <br />
+                eigene Reviews erstellen und Kommentare anderer Nutzer bewerten!
+            </p>
+        </div>
+        <div class="col-12">
+            <div class="form-floating">
+                <input type="text" id="nickname" class="form-control" asp-for="@Model.UserModel.Username" placeholder="Name123XY" value="" maxlength="255" required />
+                <label for="nickname">Benutzername</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <hr />
+        </div>
+        <div class="col-12">
+            <div class="form-floating">
+                <input type="email" id="email" class="form-control" asp-for="@Model.UserModel.Email" value="" placeholder="emailxy@com.de" maxlength="255" required />
+                <label for="email">E-Mail-Adresse</label>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-floating">
+                <input type="password" id="userRegPassword" class="form-control" asp-for="@Model.UserModel.Password" placeholder="123yxc" minlength="4" maxlength="50" required />
+                <label for="userRegPassword">Passwort</label>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-floating">
+                <input type="password" id="userRegPasswordRepeat" class="form-control" asp-for="@Model.PasswordRepeat" placeholder="123yxc" required />
+                <label for="userRegPasswordRepeat">Passwort wiederholen</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <input type="submit" class="btn btn-secondary btn-lg w-100 " value="Create Account" />
+            <a class="btn btn-outline-secondary w-100 text-center mt-4 btn-lg" asp-area="" asp-page="/Index">
+                Back to Log in
+            </a>
+        </div>
+    </div>
+</form>
+
+<script>
+    (() => {
+        'use strict'
+
+        const forms = document.querySelectorAll('.needs-validation')
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
