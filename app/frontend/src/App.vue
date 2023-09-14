@@ -12,7 +12,7 @@ store.commit('updateJwtToken', jwtToken);
         <i class="fa-regular fa-square-check mr-4 pr-4" style="font-size: 2em;"></i>
         <span class="fs-4">&nbsp;&nbsp;PYCO TODO</span>
       </a>
-      <button type="button" class="btn btn-danger d-inline" style="width: 8%">Logout</button>
+      <a href="http://localhost:5000/" class="btn btn-danger d-inline" style="width: 8%">Logout</a>
     </header>
     <router-view />
     <footer class="text-center pt-3 text-body-secondary border-top">
