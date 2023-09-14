@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted, defineProps } from 'vue'
 import { Modal } from 'bootstrap'
-import { todo_get } from '@/todoclient'
+import { todo_get, todo_put } from '@/todoclient'
 import { todo_post } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import ListUserComponentVue from './ListUserComponent.vue'
@@ -12,7 +12,9 @@ const props = defineProps({
         type: String,
         required: true
     },
-    listUsers: Array
+    listId: Number,
+    listUsers: Array,
+    newList: Boolean
 })
 
 
@@ -22,7 +24,7 @@ const users = ref([])
 const modalHeader = ref('Error!')
 const modalMsg = ref('')
 let showMsg = false
-
+let redirectToHome = ref(false)
 const searchUserResults = ref([])
 
 const UserRoles = {
@@ -42,7 +44,7 @@ onMounted(() => {
 
     if (!users.value.length && sharedUsers.length) {
         for (let i = 0; i < props.listUsers.length; i++) {
-            users.value.push({ Id: sharedUsers[i].id, Username: sharedUsers[i].username, ListUserRole: sharedUsers[i].listUserRole });
+            users.value.push({ Id: sharedUsers[i].id, Username: sharedUsers[i].username, ListUserRole: parseInt(sharedUsers[i].listUserRole) });
         }
     }
 })
@@ -53,6 +55,10 @@ function openModal() {
 
 function closeModal() {
     state.modal_error.hide()
+    if(redirectToHome.value){
+        redirectToHome.value = false
+        window.location.reload()
+    }
 }
 
 async function searchUser(searchTerm) {
@@ -83,19 +89,41 @@ function removeUser(userId) {
 }
 
 async function createNewList() {
-    let listTitle = title.value
-    let listUsers = users.value
-    if (!listTitle) {
+    let list = { Title: title.value, ListUsers: users.value }
+    if (!list.Title) {
         modalHeader.value = "Missing title."
         modalMsg.value = "Please give your Todo list a title."
         openModal();
-    } else if (!users.value.length) {
+    } else if (!list.ListUsers.length) {
         modalHeader.value = "Who is this for?"
         modalMsg.value = "Please make sure to select at least one user that has access to the Todo list."
         openModal();
-    } else {
-        let list = { Title: listTitle, ListUsers: listUsers }
+    }else {
         await todo_post(routes.LIST, null, list)
+        modalHeader.value = "List was created"
+        modalMsg.value = "The list \"" + list.Title + " \" was successfully created. You can open the list in the menu to the left."
+        redirectToHome.value = true
+        openModal();
+    }
+}
+
+async function updateList(){
+    console.log('Time for an update')
+    let list = { Id: props.listId, Title: title.value, ListUsers: users.value }
+    if (!list.Title) {
+        modalHeader.value = "Missing title."
+        modalMsg.value = "Please give your Todo list a title."
+        openModal();
+    } else if (!list.ListUsers.length) {
+        modalHeader.value = "Who is this for?"
+        modalMsg.value = "Please make sure to select at least one user that has access to the Todo list."
+        openModal();
+    }else {
+        await todo_put(routes.LIST, null, list)
+        modalHeader.value = "List settings has been updated"
+        modalMsg.value = "The list \"" + list.Title + " \" was successfully edited. You can open the list in the menu to the left."
+        redirectToHome.value = true
+        openModal();
     }
 }
 
@@ -104,9 +132,7 @@ function updateRole(userId, newRole) {
     console.log(newRole)
     if (userId && newRole) {
         let userIndex = users.value.findIndex(u => u.Id == userId)
-        console.log("Before Update: ", users.value[userIndex])
         users.value[userIndex].ListUserRole = parseInt(newRole)
-        console.log("After update: ", users.value[userIndex])
     }
 }
 
@@ -187,7 +213,8 @@ function updateRole(userId, newRole) {
                 </ul>
             </div>
             <hr />
-            <button type="button" class="btn btn-primary" @click="createNewList()">Save Changes</button>
+            <button v-if="props.newList" type="button" class="btn btn-primary"  @click="createNewList()">Create New List</button>
+            <button v-else type="button" class="btn btn-primary"  @click="updateList()">Save Changes</button>
         </form>
 
     </div>

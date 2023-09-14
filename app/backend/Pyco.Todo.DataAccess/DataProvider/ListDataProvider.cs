@@ -34,7 +34,7 @@ public class ListDataProvider : IListDataProvider
 
         foreach (var item in listItems)
         {
-            if(listItemChecks.TryGetValue(item.ListId, out List<int>? listChecks) &&
+            if(listItemChecks.TryGetValue(item.Id, out List<int>? listChecks) &&
                 listChecks is not null)
             {
                 item.CheckedByUserIds = listChecks;

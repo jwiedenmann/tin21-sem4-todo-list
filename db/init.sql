@@ -77,6 +77,7 @@ INSERT INTO ListItemType(title) VALUES ('SingleCheck');
 -- Add roles
 INSERT INTO "role"(title) VALUES ('List Admin');
 INSERT INTO "role"(title) VALUES ('List User');
+INSERT INTO "role"(title) VALUES ('Read Only');
 --
 
 -- password is test

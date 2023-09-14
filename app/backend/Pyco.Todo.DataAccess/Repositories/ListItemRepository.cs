@@ -108,7 +108,7 @@ where id = @id;";
     {
         const string query = @"
 update listItem
-set archive = @archive
+set archive = true
 where id = @id;";
 
         using var connection = new NpgsqlConnection(_connectionstring);

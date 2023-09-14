@@ -4,36 +4,37 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="w-100 py-5" style="background-image: url('Assets/search-background.svg');background-size: cover;
-background-position-x: center">
-    <h1 class="text-center fw-bold py-5">You´r Welcome to manage your Time</h1>
-    <form method="get" name="formSearch" asp-area="Search">
-        <div class="input-group">
-            <input type="text" class="form-control" name="searchText" placeholder="Aufgaben für Zuhause...">
-            <input type="submit" class="btn btn-secondary" value="Search">
-        </div>
-    </form>
+<div class="row w-100 py-3 mt-3 align-items-center justify-content-center shadow p-3 mb-5 rounded" style="background-color: rgba(243, 241, 241, 0.753);">
+        <h1 class="text-center fw-bold py-5" style="color:#2c3e50; font-size: 3em;">PYCO TODO</h1>
 </div>
-<div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 py-5">
-    <div class="col">
-        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-             style="background-image: url('Assets/timetower.jpg');background-size: cover;">
-            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-                <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
-                    Du möchtest sehen, welche TODO´s
-                    dir zugewießen sind?
-                </h3>
-                <a class="btn btn-secondary mt-auto" asp-area="TodoLists" asp-page="/Index">TODO-Listen anzeigen</a>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-             style="background-image: url('Assets/timehead.jpg');background-size: cover;">
-            <div class="d-flex flex-column h-100 p-5 pb-3 text-black text-shadow-1">
-                <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Du hast noch keinen PYCO Account?</h3>
-                <a class="btn btn-secondary mt-auto" asp-area="UserRegistration" asp-page="/Index">Benutzerregistrierung</a>
-            </div>
+@if (Model.FormResult.Length > 0)
+{
+    <p class="alert alert-danger mt-4" id="addProductInfoMsg">@Model.FormResult</p>
+}
+<div class="container align-items-center g-4 py-5">
+    <div class="row justify-content-center align-items-center rounded-3">
+        <div class="col-4 justify-content-center p-2 m-1 rounded-4 shadow p-3 mb-5 rounded" style="background-color: rgba(253, 162, 102, 0.985)">
+            <form class="form-signin justify-content-center text-center" method="post" asp-area="" asp-page="Index">
+                    <img class="mb-4" src="Assets/todo-svglogo.svg" alt="Pyco Todo" width="72" height="72">
+                <h3 class="h3 mb-3 font-weight-normal">Log In</h3>
+
+                <label for="userInput" class="sr-only float-start">Username oder Email</label>
+                    <input type="text" name="userNameOrEmail" class="form-control" id="userInput" required />
+
+
+                <label for="passwordInput" class="sr-only float-start">Passwort</label>
+                    <input type="password" name="password" class="form-control form-control-md"
+                           id="passwordInput" required />
+               
+                <div class="d-flex justify-content-center mt-2">
+                    <button type="submit" class="btn btn-secondary">Anmelden</button>
+                </div>
+            </form>
+            <div class="dropdown-divider m-3"></div>
+            
+            <a class="btn btn-outline-secondary w-100 text-center" asp-area="Registration" asp-page="/Index">
+                Sign Up
+            </a>
         </div>
     </div>
 </div>

@@ -19,6 +19,7 @@ namespace Pyco.Todo.Pages
             _configuration = configuration;
         }
 
+        public string FormResult { get; set; } = string.Empty;
         public void OnGet() { }
 
         public async Task<IActionResult> OnPost([FromForm] string userNameOrEmail, [FromForm] string password)
@@ -47,7 +48,9 @@ namespace Pyco.Todo.Pages
             if (!response.IsSuccessStatusCode)
             {
                 //TODO do something in view
-                return BadRequest();
+                FormResult =
+                    $"The username or password you eneterd is incorrect. Please try again.";
+                return Page();
             }
 
             string responseContent = await response.Content.ReadAsStringAsync();
