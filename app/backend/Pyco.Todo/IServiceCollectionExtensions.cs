@@ -34,6 +34,7 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IListRepository, ListRepository>();
         services.AddScoped<IListItemRepository, ListItemRepository>();
 
+        services.AddScoped<IListItemDataProvider, ListItemDataProvider>();
         services.AddScoped<IListDataProvider, ListDataProvider>();
     }
 }

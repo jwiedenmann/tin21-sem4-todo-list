@@ -47,7 +47,7 @@ public class ListItemController : Controller
     }
 
     [HttpPut("delete")]
-    public IActionResult Delete(int listId, int listItemId)
+    public IActionResult Delete(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -56,12 +56,12 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Archive(listItemId, listId, user.Id);
+        _listItemDataProvider.Archive(listItem.ListId, listItem.Id, user.Id);
         return Ok();
     }
 
     [HttpPut("check")]
-    public IActionResult Check(int listId, int listItemId)
+    public IActionResult Check(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -70,12 +70,12 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Check(listId, listItemId, user.Id, true);
+        _listItemDataProvider.Check(listItem.ListId, listItem.Id, user.Id, true);
         return Ok();
     }
 
     [HttpPut("uncheck")]
-    public IActionResult Uncheck(int listId, int listItemId)
+    public IActionResult Uncheck(ListItem listItem)
     {
         HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -84,7 +84,7 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Check(listId, listItemId, user.Id, false);
+        _listItemDataProvider.Check(listItem.ListId, listItem.Id, user.Id, false);
         return Ok();
     }
 }
