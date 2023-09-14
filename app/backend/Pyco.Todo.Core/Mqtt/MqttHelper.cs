@@ -16,7 +16,8 @@ public class MqttHelper : IDisposable
     public async Task Connect()
     {
         MqttClientOptions mqttClientOptions = new MqttClientOptionsBuilder()
-            .WithTcpServer("localhost", 1883)
+            .WithWebSocketServer(x => x.WithUri("ws://localhost:9001/mqtt"))
+            //.WithTcpServer("localhost", 1883)
             .WithCredentials("user1", "1234")
             .Build();
         await _mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);

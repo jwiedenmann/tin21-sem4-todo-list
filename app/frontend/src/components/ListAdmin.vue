@@ -57,7 +57,7 @@ function closeModal() {
     state.modal_error.hide()
     if(redirectToHome.value){
         redirectToHome.value = false
-        window.location.reload()
+        //window.location.reload()
     }
 }
 
