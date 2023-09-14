@@ -1,3 +1,4 @@
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -59,8 +60,8 @@ namespace Pyco.Todo.Areas.Registration.Pages
             }
 
             //Hash Password and insert useraccount in db
-            var passwordHasher = new PasswordHasher<string>();
-            userModel.Password = passwordHasher.HashPassword(userModel.Username, userModel.Password);
+            PasswordHasher hasher = new();
+            userModel.Password = hasher.HashPassword(userModel.Password);
             _userRepository.Insert(userModel);
 
             FormResult = $"Ihr Account wurde erflogreich angelegt! Herzlich Willkommen bei PYCO, {userModel.Username}!";
