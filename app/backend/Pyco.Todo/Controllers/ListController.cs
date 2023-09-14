@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Core.Exception;
+using Pyco.Todo.Core.Mqtt;
 using Pyco.Todo.Data.Models;
 using Pyco.Todo.DataAccess.Interfaces;
-using System.Collections.Generic;
 
 namespace Pyco.Todo.Controllers
 {
@@ -12,15 +12,21 @@ namespace Pyco.Todo.Controllers
     [Route("/api/v1/{controller}")]
     public class ListController : Controller
     {
+        private readonly IConfiguration _configuration;
         private readonly IListDataProvider _listDataProvider;
         private readonly IListRepository _listRepository;
+        private readonly MqttHelper _mqttHelper;
 
         public ListController(
+            IConfiguration configuration,
             IListDataProvider listDataProvider,
-            IListRepository listRepository)
+            IListRepository listRepository,
+            MqttHelper mqttHelper)
         {
+            _configuration = configuration;
             _listDataProvider = listDataProvider;
             _listRepository = listRepository;
+            _mqttHelper = mqttHelper;
         }
 
         [HttpGet("user")]
@@ -41,7 +47,7 @@ namespace Pyco.Todo.Controllers
         {
             HttpContext.Items.TryGetValue("User", out object? obj);
 
-            if(obj is null || obj is not User user)
+            if (obj is null || obj is not User user)
             {
                 throw new UnauthorizedException();
             }
@@ -50,10 +56,20 @@ namespace Pyco.Todo.Controllers
         }
 
         [HttpPost]
-        public IActionResult Insert([FromBody] List list) => Ok(_listDataProvider.Insert(list));
+        public async Task<IActionResult> Insert([FromBody] List list)
+        {
+            int listId = _listDataProvider.Insert(list);
+
+            foreach (var listUser in list.ListUsers ?? new List<User>())
+            {
+                await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:User") + listUser.Id, string.Empty);
+            }
+
+            return Ok(listId);
+        }
 
         [HttpPut]
-        public IActionResult Update([FromBody] List list)
+        public async Task<IActionResult> Update([FromBody] List list)
         {
             HttpContext.Items.TryGetValue("User", out object? obj);
 
@@ -63,7 +79,7 @@ namespace Pyco.Todo.Controllers
             }
 
             _listDataProvider.Update(list, user.Id);
-
+            await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + list.Id, string.Empty);
             return Ok();
         }
     }
