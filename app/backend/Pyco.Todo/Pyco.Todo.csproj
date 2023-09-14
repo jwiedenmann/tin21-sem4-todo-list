@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.7" />
+    <PackageReference Include="MQTTnet" Version="4.3.1.873" />
   </ItemGroup>
 
   <ItemGroup>
