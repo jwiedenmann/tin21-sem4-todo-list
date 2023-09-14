@@ -5,8 +5,10 @@ import ListAdminVue from '../components/ListAdmin.vue'
 import TodoListComponent from '@/components/TodoListComponent.vue';
 import { todo_get } from '@/todoclient';
 import routes from '@/constants/todoroutes'
-
+import topics from '@/constants/todotopics'
+const mqtt = require("precompiled-mqtt");
 const dataReady = ref(false);
+const statusMsg = ref('');
 let showAdminView = ref(false);
 let showTodoView = ref(false)
 let adminComponentKey = ref(0)
@@ -18,6 +20,71 @@ let listUsers = ref([])
 let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
+
+//mqtt stuff
+let subscribeSuccess = false
+let connecting = false
+let retryTimes = 0
+let receiveNews = ""
+let qosList = [0, 1, 2]
+let subscription = {
+        topic: topics.USER_TOPIC,
+        qos: 0,
+      }
+let connection = {
+        protocol: "ws",
+        host: "localhost",
+        // ws: 9001; mqtt: 1883
+        port: 9001,
+        endpoint: "/mqtt",
+        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
+        clean: true,
+        connectTimeout: 30 * 1000, // ms
+        reconnectPeriod: 4000, // ms
+        clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
+        // auth
+        username: "user1",
+        password: "1234",
+}
+/*let client = {
+        connected: false,
+      }
+*/
+function getRandomInt(min, max) {
+  return Math.floor(min + Math.random() * Math.floor(max - min));
+}
+
+const { protocol, host, port, endpoint, ...options } = connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+console.log(connectUrl)
+let client = mqtt.connect(connectUrl, options)
+
+client.on('connect', function () {
+  // subscribe to a topic to receive message from it
+  client.subscribe(topics.USER_TOPIC + store.state.user.id, function (err) {
+    if (!err) {
+      console.log('Connected and subscribed to topic: ' + topics.USER_TOPIC + store.state.user.id)
+      // after connection is success - send hello:
+      //client.publish(topics.USER_TOPIC + store.state.user.id, 'Hello mqtt from user:' + store.state.user.id)
+    }
+  })
+})
+
+// What should happen if I recive a message?
+client.on('message', function (topic, message) {
+  // message is Buffer
+  console.log("Received:" + message.toString())
+  window.location.reload()
+  // to end the connection:
+  //client.end()
+})
+
+function postMessage() {
+  console.log("Sending message...")
+  // the publish function will send the message to the defined topic
+  client.publish(topics.USER_TOPIC + store.state.user.id, 'My message: ' + Math.random() + ' - from user: ' + store.state.user.id)
+}
+
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
   
@@ -49,6 +116,16 @@ async function openAdminView(listId){
       showAdminView.value = true;
       forceRerenderer(adminComponentKey)
 }
+
+function initData(){ 
+      client = {
+        connected: false,
+      }
+      retryTimes = 0
+      connecting = false
+      subscribeSuccess = false  
+}
+
 
 function forceRerenderer(key){
   key.value += 1
@@ -85,6 +162,9 @@ function formatDate(date) {
 </script>
 <template>
   <div class="row flex-grow-1 h-75 mb-4 rounded-3" style="background-color: white;">
+    <div v-if="statusMsg" class="alert alert-primary" role="alert">
+      {{ statusMsg }}
+    </div>
     <div class="container-fluid flex-column d-flex">
       <div class="row flex-grow-1">
         <div class="col-4">
