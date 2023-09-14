@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Pyco.Todo.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body style="background-image: url('Assets/space-bg.png');background-size: cover; background-color:#EEEEEE;">
+    <!--
     <header>
         <header>
             <h1 class="text-center bg-primary text-secondary py-2 mb-0">It´s Time to manage YOUR TIME the better WAY with PYCO Todo! Damn</h1>
@@ -85,15 +86,16 @@
             </nav>
         </header>
     </header>
+    -->
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 h-100">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - Pyco.Todo - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer class="border-top footer text-muted text-center justify-content-center" style="background-color: #EEEEEE">
+        <div class="container w-100">
+            &copy; 2023 - Pyco.Todo
         </div>
     </footer>
 
