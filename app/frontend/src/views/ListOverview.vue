@@ -5,8 +5,10 @@ import ListAdminVue from '../components/ListAdmin.vue'
 import TodoListComponent from '@/components/TodoListComponent.vue';
 import { todo_get } from '@/todoclient';
 import routes from '@/constants/todoroutes'
-
+import topics from '@/constants/todotopics'
+const mqtt = require("precompiled-mqtt");
 const dataReady = ref(false);
+const statusMsg = ref('');
 let showAdminView = ref(false);
 let showTodoView = ref(false)
 let adminComponentKey = ref(0)
@@ -18,6 +20,36 @@ let listUsers = ref([])
 let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
+
+//mqtt stuff
+let subscribeSuccess = false
+let connecting = false
+let retryTimes = 0
+let receiveNews = ""
+let qosList = [0, 1, 2]
+let subscription = {
+        topic: topics.USER_TOPIC,
+        qos: 0,
+      }
+let connection = {
+        protocol: "ws",
+        host: "localhost",
+        // ws: 9001; mqtt: 1883
+        port: 9001,
+        endpoint: "/mqtt",
+        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
+        clean: true,
+        connectTimeout: 30 * 1000, // ms
+        reconnectPeriod: 4000, // ms
+        clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
+        // auth
+        username: "user1",
+        password: "1234",
+}
+let client = {
+        connected: false,
+}
+
 onMounted( async ()=> {
   todoList.value = await todo_get(routes.LIST_USER)
   
@@ -28,6 +60,8 @@ onMounted( async ()=> {
         }
     }
   console.log(todoList)
+  createConnection()
+  subscribeToTopic()
   dataReady.value = true;
 })
 
@@ -50,6 +84,63 @@ async function openAdminView(listId){
       forceRerenderer(adminComponentKey)
 }
 
+function subscribeToTopic(){
+  const topic = topics.USER_TOPIC;
+  console.log(`Subscribing to Topic: ${topic}`);
+
+  client.subscribe(topic, { qos: 0 });
+  statusMsg.value = "SUBSCRIBED";
+}
+
+function initData(){ 
+      client = {
+        connected: false,
+      }
+      retryTimes = 0
+      connecting = false
+      subscribeSuccess = false  
+}
+
+function createConnection() {
+      try {
+        connecting = true;
+        const { protocol, host, port, endpoint, ...options } = connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+        client = mqtt.connect(connectUrl, options);
+        if (client.on) {
+          client.on("connect", () => {
+            connecting = false;
+            console.log("Connection succeeded!");
+          });
+          client.on("reconnect", handleOnReConnect);
+          client.on("error", (error) => {
+            console.log("Connection failed", error);
+          });
+          client.on("message", (topic, message) => {
+            receiveNews = receiveNews.concat(message);
+            console.log(`Received message ${message} from topic ${topic}`);
+            
+          });
+        }
+        console.log('Connection succeeded')
+      } catch (error) {
+        connecting = false;
+        console.log("mqtt.connect error", error);
+      }
+}
+
+function handleOnReConnect() {
+      retryTimes += 1;
+      if (retryTimes > 5) {
+        try {
+          client.end();
+          initData();
+          statusMsg.value = "Connection maxReconnectTimes limit, stop retry"
+        } catch (error) {
+          statusMsg.value = error.toString();
+        }
+      }
+    }
 function forceRerenderer(key){
   key.value += 1
 }
@@ -85,6 +176,9 @@ function formatDate(date) {
 </script>
 <template>
   <div class="row flex-grow-1 h-75 mb-4 rounded-3" style="background-color: white;">
+    <div v-if="statusMsg" class="alert alert-primary" role="alert">
+      {{ statusMsg }}
+    </div>
     <div class="container-fluid flex-column d-flex">
       <div class="row flex-grow-1">
         <div class="col-4">
