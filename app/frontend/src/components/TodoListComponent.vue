@@ -64,6 +64,13 @@ client.on('connect', function () {
       console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
     }
   })
+  client.subscribe(topics.SERVER_ACK.replace('{listID}', props.listId), function(err){
+    if (!err) {
+      console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
+    }else {
+        console.log(err)
+    }
+  })
 })
 
 // What should happen if I recive a message?
