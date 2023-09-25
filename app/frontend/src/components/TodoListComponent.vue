@@ -176,6 +176,11 @@ async function EditTask(taskId, taskIdInDB) {
 }
 
 async function OnCheck(taskId, taskIdInDB) {
+    if (currentRole.value == 3) {
+        task.value = "You can't to this because you're not allowed to."
+        return;
+    }
+
     let checkedTask = {
         Id: taskIdInDB,
         ListId: props.listId,
