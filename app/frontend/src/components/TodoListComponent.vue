@@ -1,11 +1,13 @@
 <script setup>
 // ----- IMPORTS -----
 
-import { onMounted, ref, defineProps, defineEmits } from 'vue'
+import { onMounted, ref, defineProps, defineEmits, onBeforeUnmount } from 'vue'
 import { todo_get, todo_post, todo_put } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import store from '@/store';
 import topics from '@/constants/todotopics'
+import debounce from "lodash.debounce";
+
 const mqtt = require("precompiled-mqtt");
 
 // ----- CONSTS -----
@@ -31,6 +33,16 @@ let TaskIdCunt = 0
 let componentKey = ref(0)
 const TodoName = ref('')
 
+const firstPos = ref(true)
+const isInsert = ref(true)
+const insertedChars = ref([])
+const currentPosition = ref(0)
+const startPosition = ref(0)
+const changeLength = ref(0)
+const changeValue = ref('')
+const sentChanges = ref({})
+const pendingChanges = ref([])
+
 const Tasks = ref([])
 const Users = ref([])
 
@@ -52,11 +64,13 @@ let connection = {
         username: "user1",
         password: "1234",
 }
+
 const { protocol, host, port, endpoint, ...options } = connection;
         const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 console.log(connectUrl)
 let client = mqtt.connect(connectUrl, options)
-
+//initialize clientStateInfos for operational transformations
+//let stateInfos = new clientStateInfos(0)
 client.on('connect', function () {
   // subscribe to a topic to receive message from it
   client.subscribe(topics.LIST_TOPIC + props.listId, function (err) {
@@ -73,22 +87,96 @@ client.on('connect', function () {
   })
 })
 
-// What should happen if I recive a message?
+// What should happen if I recieve a message?
 client.on('message', function (topic, message) {
   // message is Buffer
   console.log("Received:" + message.toString())
   if(topic.startsWith(topics.LIST_TOPIC)){
     emit('reloadTodos', props.listId)
+  }else if(topic.startsWith(topics.SERVER_ACK)){
+    sentChanges.value = {}
+    if(pendingChanges.value.length){
+        let clientUpdate = pendingChanges.value.shift()
+        console.log('Sending this to server:', clientUpdate)
+        console.log('Before: ', pendingChanges.value)
+        doPublish(clientUpdate)
+        console.log('After: ', pendingChanges.value)
+    }
   }
   // to end the connection:
   //client.end()
 })
 
-const forceRerender = () => {
-    console.log('Rerender')
-  componentKey.value += 1;
-};
+function doPublish(clientUpdate) {
+    let publication = {
+        topic: topics.CLIENT_UPDATE.replace('{listID}', props.listId),
+        qos: 1,
+        payload: JSON.stringify(clientUpdate)
+    }
+  const { topic, qos, payload} = publication
+  console.log(publication)
+  client.publish(topic, payload, qos, error => {
+    if (error) {
+      console.log('Publish error', error)
+    }else{
+        sentChanges.value = clientUpdate
+        console.log('Successfully published this: ' + payload + ' to topic ' + topic)
+    }
+  })
+}
 
+function getCursor(event) {
+    if(firstPos.value){
+        startPosition.value = event.target.selectionStart
+        console.log('Starting Pos: ', startPosition.value)
+        firstPos.value = false
+    }
+    if(event.inputType === 'insertText'){
+        insertedChars.value.push(event.data)
+        console.log(insertedChars.value)
+    }else if(event.inputType === 'deleteContentBackward'){
+        isInsert.value = false
+    }else{
+        console.log(event.inputType)
+        isInsert.value = false
+    }
+    currentPosition.value =  event.target.selectionStart  
+    console.log('Caret at: ', currentPosition.value)
+}
+
+const debouncedHandler = debounce(event => {
+  console.log('New document value:', event.target.value);
+  changeLength.value = currentPosition.value - (startPosition.value - 1)
+  console.log('Length: ', changeLength.value)
+  //get Inserted Text
+  changeValue.value = insertedChars.value.join('')
+  console.log(changeValue.value)
+  
+  let currentChange = {
+    "isInsert": isInsert.value,
+    "position": startPosition.value,
+    "length": changeLength.value,
+    "value": changeValue.value
+  }
+  pendingChanges.value.push(currentChange)
+  console.log(currentChange)
+
+  //send update to server if possible
+  if(pendingChanges.value.length && Object.keys(sentChanges.value).length === 0){
+    let clientUpdate = pendingChanges.value.shift()
+    console.log('Sending this to server:', clientUpdate)
+    console.log('Before: ', pendingChanges.value)
+    doPublish(clientUpdate)
+    console.log('After: ', pendingChanges.value)
+  }
+  //reset parameters
+  firstPos.value = true
+  insertedChars.value = []
+}, 500);
+
+onBeforeUnmount(() => {
+  debouncedHandler.cancel();
+});
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
@@ -129,7 +217,7 @@ async function CreateTask() {
         task.value = "You can not add Taks, cuz your not a Admin lol"
         return;
     }
-
+    console.log(task.value.selectionStart)
     console.log(task.value)
     if (task.value.length === 0) return;
 
@@ -220,7 +308,7 @@ async function OnUnCheck(taskId, taskIdInDB) {
         <h1>{{ TodoName }}</h1>
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
-            <input v-model="task" type="Content" placeholder="Neues Todo hinzufügen" class="form-control">
+            <input v-model="task" type="Content" v-on:input="debouncedHandler" id="taskField" placeholder="Neues Todo hinzufügen" class="form-control" @input="getCursor($event)">
             <button v-if="editedTaskId != null" @click="CreateTask" class="btn btn-primary">Edit</button>
             <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
         </div>
