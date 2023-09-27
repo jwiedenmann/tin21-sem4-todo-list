@@ -42,6 +42,7 @@ const changeLength = ref(0)
 const changeValue = ref('')
 const sentChanges = ref({})
 const pendingChanges = ref([])
+const taskInEdit = ref(null)
 
 const Tasks = ref([])
 const Users = ref([])
@@ -78,7 +79,7 @@ client.on('connect', function () {
       console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
     }
   })
-  client.subscribe(topics.SERVER_ACK.replace('{listID}', props.listId), function(err){
+  client.subscribe(topics.SERVER_ACK, function(err){
     if (!err) {
       console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
     }else {
@@ -109,7 +110,7 @@ client.on('message', function (topic, message) {
 
 function doPublish(clientUpdate) {
     let publication = {
-        topic: topics.CLIENT_UPDATE.replace('{listID}', props.listId),
+        topic: topics.CLIENT_UPDATE,
         qos: 1,
         payload: JSON.stringify(clientUpdate)
     }
@@ -136,18 +137,19 @@ function getCursor(event) {
         console.log(insertedChars.value)
     }else if(event.inputType === 'deleteContentBackward'){
         isInsert.value = false
-        sendUpdate(false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, false, event.target.selectionStart, 1, null)
     }else{
         console.log(event.inputType)
         isInsert.value = false
-        sendUpdate(false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, false, event.target.selectionStart, 1, null)
     }
     currentPosition.value =  event.target.selectionStart  
     console.log('Caret at: ', currentPosition.value)
 }
 
-function sendUpdate(isInsert, position, length, value){
+function sendUpdate(listItemId, isInsert, position, length, value){
     let currentChange = {
+    "listItemId": listItemId,
     "isInsert": isInsert,
     "position": position,
     "length": length,
@@ -176,8 +178,8 @@ const debouncedHandler = debounce(event => {
   //get Inserted Text
   changeValue.value = insertedChars.value.join('')
   console.log(changeValue.value)
-  if(changeValue.value){
-    sendUpdate(true, startPosition.value, changeLength.value, changeValue.value)
+  if(taskInEdit.value != null && changeValue.value){
+    sendUpdate(taskInEdit.value, true, startPosition.value, changeLength.value, changeValue.value)
   }
 }, 500);
 
@@ -271,6 +273,7 @@ async function DeleteTask(taskContent, taskId) {
 }
 
 async function EditTask(taskId, taskIdInDB) {
+    taskInEdit.value = taskIdInDB
     if (currentRole.value != 1) return;
     task.value = Tasks.value[taskId].Content;
     editedTaskId = taskId;

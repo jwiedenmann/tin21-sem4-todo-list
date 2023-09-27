@@ -1,7 +1,7 @@
 const USER_TOPIC = "/todo/user/"
 const LIST_TOPIC = "/todo/list/"
-const CLIENT_UPDATE = "/todo/list/{listID}/update"
-const SERVER_ACK = "/todo/list/{listID}/update/ack"
+const CLIENT_UPDATE = "/todo/list/item/update"
+const SERVER_ACK = "/todo/list/item/update/ack"
 
 export default {
   USER_TOPIC: USER_TOPIC,
