@@ -9,6 +9,10 @@ public class ListItemClientUpdate
     /// </summary>
     public int LastSyncedRevision { get; set; }
     /// <summary>
+    /// The Id of the updated listitem
+    /// </summary>
+    public int ListItemId { get; set; }
+    /// <summary>
     /// The ID of the user that sent the update
     /// </summary>
     public int UserId { get; set; }
