@@ -136,30 +136,25 @@ function getCursor(event) {
         console.log(insertedChars.value)
     }else if(event.inputType === 'deleteContentBackward'){
         isInsert.value = false
+        sendUpdate(false, event.target.selectionStart, 1, null)
     }else{
         console.log(event.inputType)
         isInsert.value = false
+        sendUpdate(false, event.target.selectionStart, 1, null)
     }
     currentPosition.value =  event.target.selectionStart  
     console.log('Caret at: ', currentPosition.value)
 }
 
-const debouncedHandler = debounce(event => {
-  console.log('New document value:', event.target.value);
-  changeLength.value = currentPosition.value - (startPosition.value - 1)
-  console.log('Length: ', changeLength.value)
-  //get Inserted Text
-  changeValue.value = insertedChars.value.join('')
-  console.log(changeValue.value)
-  
-  let currentChange = {
-    "isInsert": isInsert.value,
-    "position": startPosition.value,
-    "length": changeLength.value,
-    "value": changeValue.value
+function sendUpdate(isInsert, position, length, value){
+    let currentChange = {
+    "isInsert": isInsert,
+    "position": position,
+    "length": length,
+    "value": value
   }
   pendingChanges.value.push(currentChange)
-  console.log(currentChange)
+  console.log('Pushed this to update queue: ', currentChange)
 
   //send update to server if possible
   if(pendingChanges.value.length && Object.keys(sentChanges.value).length === 0){
@@ -172,6 +167,18 @@ const debouncedHandler = debounce(event => {
   //reset parameters
   firstPos.value = true
   insertedChars.value = []
+}
+
+const debouncedHandler = debounce(event => {
+  console.log('New document value:', event.target.value);
+  changeLength.value = currentPosition.value - (startPosition.value - 1)
+  console.log('Length: ', changeLength.value)
+  //get Inserted Text
+  changeValue.value = insertedChars.value.join('')
+  console.log(changeValue.value)
+  if(changeValue.value){
+    sendUpdate(true, startPosition.value, changeLength.value, changeValue.value)
+  }
 }, 500);
 
 onBeforeUnmount(() => {
