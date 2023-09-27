@@ -179,7 +179,7 @@ public class MqttListItemUpdateService : IMqttClientService
                     // This code will also do the very first connect! So no call to _ConnectAsync_ is required in the first place.
                     if (!await _mqttClient.TryPingAsync())
                     {
-                        await _mqttClient.ConnectAsync(_mqttClient.Options, CancellationToken.None);
+                        await _mqttClient.ConnectAsync(_options, CancellationToken.None);
 
                         // Subscribe to topics when session is clean etc.
                         _logger.LogInformation("The MQTT client is connected.");
