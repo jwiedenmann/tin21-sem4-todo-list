@@ -31,6 +31,11 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@developer-blog.net
       PGADMIN_DEFAULT_PASSWORD: admin123
+  nginx-reverse-proxy:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
 #   mqtt-broker:
 #     image: eclipse-mosquitto
 #     container_name: mqtt-broker
