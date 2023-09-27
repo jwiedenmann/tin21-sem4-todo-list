@@ -37,7 +37,7 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IListRepository, ListRepository>();
-        services.AddScoped<IListItemRepository, ListItemRepository>();
+        services.AddSingleton<IListItemRepository, ListItemRepository>();
 
         services.AddScoped<IListItemDataProvider, ListItemDataProvider>();
         services.AddScoped<IListDataProvider, ListDataProvider>();
