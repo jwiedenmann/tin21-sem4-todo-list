@@ -161,7 +161,6 @@ public class MqttListItemUpdateService : IMqttClientService
 
     public Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
     {
-
         _logger.LogInformation("HandleDisconnected");
         return Task.CompletedTask;
     }
