@@ -109,7 +109,7 @@ async function openAdminView(listId){
         listTitle.value = "New Todo List"
         createView.value = true
       }
-      if(role == 1){
+      if(role == 1 || listId == null){
         showAdminView.value = true;
         forceRerenderer(adminComponentKey)
       }else{
