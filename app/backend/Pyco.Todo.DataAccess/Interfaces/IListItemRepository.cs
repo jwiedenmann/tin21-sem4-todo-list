@@ -6,7 +6,8 @@ public interface IListItemRepository
 {
     int Archive(int id);
     int Check(int listItemId, int userId);
-    IEnumerable<ListItem> Get(int listId, bool showArchived = false);
+    ListItem? GetListItem(int listItemId, bool showArchived = false);
+    IEnumerable<ListItem> GetListItems(int listId, bool showArchived = false);
     /// <summary>
     /// Gets all the listitem ids and the users ids that checked these elements.
     /// </summary>

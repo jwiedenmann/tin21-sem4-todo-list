@@ -15,7 +15,27 @@ public class ListItemRepository : IListItemRepository
         _connectionstring = configuration.GetConnectionString("TodoDb");
     }
 
-    public IEnumerable<ListItem> Get(int listId, bool showArchived = false)
+    public ListItem? GetListItem(int listItemId, bool showArchived = false)
+    {
+        const string query = @"
+select
+    li.id,
+    li.listId,
+    li.typeId,
+    li.content,
+    li.archive,
+    li.creationDate
+from listitem as li
+where
+    li.id = @listItemId and
+    (li.archive = FALSE or li.archive = @showArchived);";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.QueryFirstOrDefault<ListItem>(query, new { listItemId, showArchived });
+    }
+
+    public IEnumerable<ListItem> GetListItems(int listId, bool showArchived = false)
     {
         const string query = @"
 select

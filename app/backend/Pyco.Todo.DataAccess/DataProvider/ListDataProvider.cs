@@ -28,7 +28,7 @@ public class ListDataProvider : IListDataProvider
 
         if (list is null) return null;
 
-        IEnumerable<ListItem> listItems = _listItemRepository.Get(listId);
+        IEnumerable<ListItem> listItems = _listItemRepository.GetListItems(listId);
         Dictionary<int, List<int>> listItemChecks = _listItemRepository.GetListItemChecks(listId);
         IEnumerable<User> listUser = _userRepository.GetListUsers(listId);
 
