@@ -42,7 +42,7 @@ html {
   text-align: center;
   color: #2c3e50;
   background-color: #EEEEEE;
-  background-image: url('assets\\space-bg.png');
+  background-image: url('assets/space-bg.png');
 }
 
 nav {

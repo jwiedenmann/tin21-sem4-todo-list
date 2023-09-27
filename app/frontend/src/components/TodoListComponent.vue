@@ -1,10 +1,12 @@
 <script setup>
 // ----- IMPORTS -----
 
-import { onMounted, ref, defineProps } from 'vue'
+import { onMounted, ref, defineProps, defineEmits } from 'vue'
 import { todo_get, todo_post, todo_put } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import store from '@/store';
+import topics from '@/constants/todotopics'
+const mqtt = require("precompiled-mqtt");
 
 // ----- CONSTS -----
 
@@ -26,11 +28,60 @@ const task = ref('')
 let editedTaskId = null
 let editedTaskIdinDB = null
 let TaskIdCunt = 0
-
+let componentKey = ref(0)
 const TodoName = ref('')
 
 const Tasks = ref([])
 const Users = ref([])
+
+const emit = defineEmits(['reloadTodos'])
+
+//mqtt stuff
+let connection = {
+        protocol: "ws",
+        host: "localhost",
+        // ws: 9001; mqtt: 1883
+        port: 9001,
+        endpoint: "/mqtt",
+        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
+        clean: true,
+        connectTimeout: 30 * 1000, // ms
+        reconnectPeriod: 4000, // ms
+        clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
+        // auth
+        username: "user1",
+        password: "1234",
+}
+const { protocol, host, port, endpoint, ...options } = connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+console.log(connectUrl)
+let client = mqtt.connect(connectUrl, options)
+
+client.on('connect', function () {
+  // subscribe to a topic to receive message from it
+  client.subscribe(topics.LIST_TOPIC + props.listId, function (err) {
+    if (!err) {
+      console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
+    }
+  })
+})
+
+// What should happen if I recive a message?
+client.on('message', function (topic, message) {
+  // message is Buffer
+  console.log("Received:" + message.toString())
+  if(topic.startsWith(topics.LIST_TOPIC)){
+    emit('reloadTodos', props.listId)
+  }
+  // to end the connection:
+  //client.end()
+})
+
+const forceRerender = () => {
+    console.log('Rerender')
+  componentKey.value += 1;
+};
+
 
 onMounted(async () => {
     currentUser.value = store.state.user.username
@@ -38,7 +89,7 @@ onMounted(async () => {
     currentListId.value = props.listId
     let todoListItems = props.listItems
     TodoName.value = props.listTitle
-
+    let todoListUsers = props.listUsers
     var resultIsAdmin = props.listUsers.find(user => user.id === currentUserId.value)
     currentRole.value = resultIsAdmin.listUserRole
 
@@ -153,9 +204,9 @@ async function OnUnCheck(taskId, taskIdInDB) {
 </script>
 
 <template>
-    <div class="container mt-4">
+    <div class="container mt-4" :key="componentKey">
         <h1>{{ TodoName }}</h1>
-
+        <button @click="forceRerender">Test</button>
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
             <input v-model="task" type="Content" placeholder="Neues Todo hinzufügen" class="form-control">
@@ -191,7 +242,7 @@ async function OnUnCheck(taskId, taskIdInDB) {
                         <button @click="OnUnCheck(todos.idInFrontendList, todos.id)" v-if="todos.isCheckedByCurrentUser"
                             class="btn btn-success" style="font-size: x-small; padding: 0.3%;">Done</button>
                         <button @click="OnCheck(todos.idInFrontendList, todos.id)" v-else class="btn btn-primary"
-                            style="font-size: x-small; padding: 0.3%;">Abhacken</button>
+                            style="font-size: x-small; padding: 0.3%;">Abhaken</button>
                     </li>
                 </ul>
                 <!-- <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"

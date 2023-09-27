@@ -28,7 +28,8 @@ select
 from listitem as li
 where
     li.listId = @listId and
-    (li.archive = FALSE or li.archive = @showArchived);";
+    (li.archive = FALSE or li.archive = @showArchived)
+order by li.id;";
 
         using var connection = new NpgsqlConnection(_connectionstring);
         connection.Open();

@@ -67,7 +67,7 @@ public class ListItemController : Controller
             throw new UnauthorizedException();
         }
 
-        _listItemDataProvider.Archive(listItem.Id, listItem.ListId, user.Id);
+        _listItemDataProvider.Archive(listItem.ListId, listItem.Id, user.Id);
         await _mqttHelper.Publish(_configuration.GetValue<string>("Mqtt:List") + listItem.ListId, string.Empty);
         return Ok();
     }
