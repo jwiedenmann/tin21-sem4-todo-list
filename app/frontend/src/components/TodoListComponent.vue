@@ -97,8 +97,8 @@ client.on('message', function (topic, message) {
   }else if(topic.toString() === topics.SERVER_ACK){
     console.log('im ServerACK')
     sentChanges.value = {}
-    console.log(message.toJSON().RevisionId)
-    Tasks.value[editedTaskId].lastSyncedRevision = message.RevisionId
+    let messageObj = JSON.parse(message.toString())
+    Tasks.value[editedTaskId].lastSyncedRevision = messageObj.NewRevisionId
     console.log('Die neue Rev ID vom ServerACK: ', Tasks.value[editedTaskId].lastSyncedRevision)
     if(pendingChanges.value.length){
         let clientUpdate = pendingChanges.value.shift()
