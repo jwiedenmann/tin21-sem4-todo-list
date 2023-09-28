@@ -98,6 +98,10 @@ client.on('message', function (topic, message) {
     console.log('im ServerACK')
     sentChanges.value = {}
     let messageObj = JSON.parse(message.toString())
+    if(messageObj.ListItemClientUpdate.UserId != parseInt(store.state.user.id)){
+        //update from another user, apply changes
+        applyChanges(Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId), messageObj.ListItemClientUpdate)
+    } 
     Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).lastSyncedRevision = messageObj.NewRevisionId
     console.log('Die neue Rev ID vom ServerACK: ', Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).lastSyncedRevision)
     if(pendingChanges.value.length){
@@ -190,6 +194,14 @@ const debouncedHandler = debounce(event => {
   }
 }, 500);
 
+function applyChanges(listItem, serverUpdate){
+    if(clientUpdate.isInsert){
+        listItem.Content = listItem.Content.slice(0, serverUpdate.Position) + serverUpdate.Value + listItem.Content.slice(serverUpdate.Position)
+    }else {
+        let startIndex = serverUpdate.Position - serverUpdate.Length
+        listItem.Content = listItem.Content.slice(0, startIndex) + listItem.Content.slice(serverUpdate.Position)
+    }
+}
 onBeforeUnmount(() => {
   debouncedHandler.cancel();
 });
