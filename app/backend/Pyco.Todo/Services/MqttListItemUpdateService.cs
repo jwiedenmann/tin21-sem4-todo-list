@@ -1,16 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using MQTTnet;
+﻿using MQTTnet;
 using MQTTnet.Client;
 using System.Text.Json;
 using Pyco.Todo.Data.ViewModels;
-using System.Collections.Concurrent;
 using Pyco.Todo.DataAccess.Interfaces;
 using Pyco.Todo.Data.Models;
-using System.Security.Cryptography.Xml;
-using System;
+using Mqtt.Client.AspNetCore.Services;
 
-namespace Mqtt.Client.AspNetCore.Services;
+namespace Pyco.Todo.Services;
 
 public class MqttListItemUpdateService : IMqttClientService
 {
@@ -179,10 +175,15 @@ public class MqttListItemUpdateService : IMqttClientService
         await _mqttClient.SubscribeAsync(_clientUpdateTopic);
     }
 
-    public Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
+    public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
     {
         _logger.LogInformation("HandleDisconnected");
-        return Task.CompletedTask;
+
+        if (eventArgs.ClientWasConnected)
+        {
+            // Use the current options as the new options.
+            await _mqttClient.ConnectAsync(_mqttClient.Options);
+        }
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

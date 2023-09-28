@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Mqtt.Client.AspNetCore.Services;
-using MQTTnet.Client;
+﻿using MQTTnet.Client;
 using Pyco.Todo.Core.Authorization;
 using Pyco.Todo.Core.Mqtt;
 using Pyco.Todo.Data.Jwt;
 using Pyco.Todo.DataAccess.DataProvider;
 using Pyco.Todo.DataAccess.Interfaces;
 using Pyco.Todo.DataAccess.Repositories;
+using Pyco.Todo.Services;
 
 namespace Pyco.Todo;
 

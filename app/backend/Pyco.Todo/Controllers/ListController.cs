@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mqtt.Client.AspNetCore.Services;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Core.Exception;
 using Pyco.Todo.Core.Mqtt;
 using Pyco.Todo.Data.Models;
 using Pyco.Todo.DataAccess.Interfaces;
+using Pyco.Todo.Services;
 
 namespace Pyco.Todo.Controllers
 {
