@@ -90,15 +90,19 @@ client.on('connect', function () {
 // What should happen if I recieve a message?
 client.on('message', function (topic, message) {
   // message is Buffer
-  console.log("Received:" + message.toString())
-  if(topic.startsWith(topics.LIST_TOPIC)){
+  console.log("Received:" + message.toString() + " from Topic: " + topic.toString())
+  if(topic.toString() === topics.LIST_TOPIC){
+    console.log('im Reloaaaad')
     emit('reloadTodos', props.listId)
-  }else if(topic.startsWith(topics.SERVER_ACK)){
+  }else if(topic.toString() === topics.SERVER_ACK){
+    console.log('im ServerACK')
     sentChanges.value = {}
-    //Tasks.value[idAusAck].lastSyncedRevision += 1
+    console.log(message.toJSON().RevisionId)
+    Tasks.value[editedTaskId].lastSyncedRevision = message.RevisionId
+    console.log('Die neue Rev ID vom ServerACK: ', Tasks.value[editedTaskId].lastSyncedRevision)
     if(pendingChanges.value.length){
         let clientUpdate = pendingChanges.value.shift()
-        console.log('Sending this to server:', clientUpdate)
+        console.log('Sending this to server from the pending changes Queue:', clientUpdate)
         console.log('Before: ', pendingChanges.value)
         doPublish(clientUpdate)
         console.log('After: ', pendingChanges.value)
@@ -137,20 +141,20 @@ function getCursor(event) {
         console.log(insertedChars.value)
     }else if(event.inputType === 'deleteContentBackward'){
         isInsert.value = false
-        sendUpdate(taskInEdit.value, false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, event.target.selectionStart, 1, null)
     }else{
         console.log(event.inputType)
         isInsert.value = false
-        sendUpdate(taskInEdit.value, false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, event.target.selectionStart, 1, null)
     }
     currentPosition.value =  event.target.selectionStart  
     console.log('Caret at: ', currentPosition.value)
 }
 
-function sendUpdate(listItemId, isInsert, position, length, value){
+function sendUpdate(listItemId, lsr, isInsert, position, length, value){
     let currentChange = {
-    //"lastSyncedRevision": lsr,
     "listItemId": listItemId,
+    "lastSyncedRevision": lsr,
     "isInsert": isInsert,
     "position": position - 1,
     "length": length,
@@ -180,7 +184,7 @@ const debouncedHandler = debounce(event => {
   changeValue.value = insertedChars.value.join('')
   console.log(changeValue.value)
   if(taskInEdit.value != null && changeValue.value){
-    sendUpdate(taskInEdit.value, true, startPosition.value, changeLength.value, changeValue.value)
+    sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, true, startPosition.value, changeLength.value, changeValue.value)
   }
 }, 500);
 
@@ -201,7 +205,7 @@ onMounted(async () => {
     for (let i = 0; i < todoListItems.length; i++) {
         let checkedByCurrentUser = false
         if (todoListItems[i].checkedByUserIds.indexOf(currentUserId.value) >= 0) checkedByCurrentUser = true;
-        //let lsr = todoListItems[i].lastSyncedRevision
+        let lsr = todoListItems[i].revisionId
         console.log(todoListItems[i].content);
         Tasks.value.push({
             id: todoListItems[i].id,
@@ -209,7 +213,7 @@ onMounted(async () => {
             Content: todoListItems[i].content,
             checkedSum: todoListItems[i].checkedByUserIds.length,
             isCheckedByCurrentUser: checkedByCurrentUser,
-            //lastSyncedRevision: lsr
+            lastSyncedRevision: lsr
         })
     }
 
@@ -276,6 +280,7 @@ async function DeleteTask(taskContent, taskId) {
 
 async function EditTask(taskId, taskIdInDB) {
     taskInEdit.value = taskIdInDB
+    //frontendTaskId.value = taskId
     if (currentRole.value != 1) return;
     task.value = Tasks.value[taskId].Content;
     editedTaskId = taskId;
