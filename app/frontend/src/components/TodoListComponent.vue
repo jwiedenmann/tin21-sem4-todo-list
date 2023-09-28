@@ -76,12 +76,12 @@ client.on('connect', function () {
   // subscribe to a topic to receive message from it
   client.subscribe(topics.LIST_TOPIC + props.listId, function (err) {
     if (!err) {
-      console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
+      console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId)
     }
   })
   client.subscribe(topics.SERVER_ACK, function(err){
     if (!err) {
-      console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId,)
+      console.log('Connected and subscribed to topic: ' + topics.SERVER_ACK)
     }else {
         console.log(err)
     }
