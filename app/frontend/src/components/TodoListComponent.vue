@@ -22,11 +22,12 @@ const props = defineProps({
     listItems: Array
 })
 
+// task is the value of the input bar "Task hinzufügen"
+const task = ref('')
 const currentUser = ref('')
 const currentUserId = ref(0)
 const currentListId = ref(0)
 const currentRole = ref(0)
-const task = ref('')
 let editedTaskId = null
 let editedTaskIdinDB = null
 let TaskIdCunt = 0
@@ -185,6 +186,9 @@ onBeforeUnmount(() => {
   debouncedHandler.cancel();
 });
 
+// onMounted gets called every time the view-component is beeing called (open TODO-List, relode webpage)
+// It assigns the data from the store and the loaded data to local variables 
+// creates two lists. One for the tasks in the current list and one for the active users in the list.
 onMounted(async () => {
     currentUser.value = store.state.user.username
     currentUserId.value = parseInt(store.state.user.id)
@@ -219,6 +223,12 @@ onMounted(async () => {
     }
 })
 
+// CreateTask is called if a user clicks the "Hinzufügen" button
+// Checks user role (has to be admin) and checks length of task content (0 length == not allowed).
+// adds the new task to Tasks list and posts it wie todo_post to the database
+// if editedTask is not null: That means, that a Task is beeing edited. Task with id = "editedTaskId" is beeing updated
+// and Task with Id = "editedTaskIdinDB" is beeing updated to.
+// editedTaskIdinDB and editedTaskId are set to null
 async function CreateTask() {
     if (currentRole.value != 1) {
         task.value = "You can not add Taks, cuz your not a Admin lol"
@@ -264,12 +274,21 @@ async function CreateTask() {
     task.value = ''
 }
 
-async function DeleteTask(taskContent, taskId) {
+// DeleteTask is called when a user clicks the delete button of a task
+// checks if user ist admin
+// deletes Task of list
+// calls todo_put to "delete" the task out of database
+// Parameters: taskContent = content of deleted task, taskIdInDB = Id of the task in database
+async function DeleteTask(taskContent, taskIdInDB) {
     if (currentRole.value != 1) return;
+    // nicht perfekt, da der Task nach content und nicht nach id gelöscht wird. ist vermerkt
     Tasks.value = Tasks.value.filter(tasks => tasks.Content != taskContent)
-    await todo_put(routes.LIST_ITEM_DELETE, null, { ListId: props.listId, Id: taskId })
+    await todo_put(routes.LIST_ITEM_DELETE, null, { ListId: props.listId, Id: taskIdInDB })
 }
 
+// EditedTaks is called when a user clicks the edit button of a task
+// value of task is beeing set to the content of the task which is beeing edited
+// editedTaskIdinDB and editedTaskId are set to the Ids of the task which is beeig edited
 async function EditTask(taskId, taskIdInDB) {
     if (currentRole.value != 1) return;
     task.value = Tasks.value[taskId].Content;
@@ -277,6 +296,11 @@ async function EditTask(taskId, taskIdInDB) {
     editedTaskIdinDB = taskIdInDB;
 }
 
+// OnCheck is called when a user checks a task
+// Checks whether a user is allowed to check a task
+// updates the database at the corrosponding dataset
+// sets the isCheckedByCurrentUser ture for the corrosponding Task
+// Parameters: taskId = Id of the task in frontend list, taskIdInDB = Id of task in database
 async function OnCheck(taskId, taskIdInDB) {
     if (currentRole.value == 3) {
         task.value = "You can't to this because you're not allowed to."
@@ -295,6 +319,10 @@ async function OnCheck(taskId, taskIdInDB) {
     Tasks.value[taskId].checkedSum++
 }
 
+// OnUnCheck is called when a user unchecks a task
+// updates the database at the corrosponding dataset
+// sets the isCheckedByCurrentUser false for the corrosponding Task
+// Parameters: taskId = Id of the task in frontend list, taskIdInDB = Id of task in database
 async function OnUnCheck(taskId, taskIdInDB) {
     let unCheckedTask = {
         Id: taskIdInDB,
