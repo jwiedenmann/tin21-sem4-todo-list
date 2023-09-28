@@ -147,11 +147,11 @@ function getCursor(event) {
         console.log('This is the delete event: ', event)
         isInsert.value = false
         //pendingChanges.value.push(currentChange)
-        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, startPosition.value +2, 1, null)
     }else{
         console.log(event.inputType)
         isInsert.value = false
-        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, event.target.selectionStart, 1, null)
+        sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, startPosition.value +2, 1, null)
     }
     currentPosition.value =  event.target.selectionStart  
     console.log('Caret at: ', currentPosition.value)
