@@ -195,7 +195,7 @@ const debouncedHandler = debounce(event => {
 }, 500);
 
 function applyChanges(listItem, serverUpdate){
-    if(serverUpdate.isInsert){
+    if(serverUpdate.IsInsert){
         listItem.Content = listItem.Content.slice(0, serverUpdate.Position) + serverUpdate.Value + listItem.Content.slice(serverUpdate.Position)
     }else {
         let startIndex = serverUpdate.Position - serverUpdate.Length
