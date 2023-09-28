@@ -45,7 +45,7 @@ const pendingChanges = ref([])
 const taskInEdit = ref(null)
 const Tasks = ref([])
 const Users = ref([])
-
+const editFieldContent = ref('')
 const emit = defineEmits(['reloadTodos'])
 
 //mqtt stuff
@@ -144,7 +144,9 @@ function getCursor(event) {
         insertedChars.value.push(event.data)
         console.log(insertedChars.value)
     }else if(event.inputType === 'deleteContentBackward'){
+        console.log('This is the delete event: ', event)
         isInsert.value = false
+        //pendingChanges.value.push(currentChange)
         sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, false, event.target.selectionStart, 1, null)
     }else{
         console.log(event.inputType)
@@ -191,18 +193,26 @@ const debouncedHandler = debounce(event => {
   console.log(changeValue.value)
   if(taskInEdit.value != null && changeValue.value){
     sendUpdate(taskInEdit.value, Tasks.value[editedTaskId].lastSyncedRevision, true, startPosition.value, changeLength.value, changeValue.value)
+  }else{
+    console.log('Delete one thing')
   }
 }, 500);
 
 function applyChanges(listItem, serverUpdate){
+    console.log('We apply it:', listItem)
     if(typeof listItem.Content === "undefined"){
         console.log('Something went wrong, reload todo elements')
         emit('reloadTodos', props.listId)
+        return
     }else if(serverUpdate.IsInsert){
         listItem.Content = listItem.Content.slice(0, serverUpdate.Position) + serverUpdate.Value + listItem.Content.slice(serverUpdate.Position)
     }else {
         let startIndex = serverUpdate.Position - serverUpdate.Length
         listItem.Content = listItem.Content.slice(0, startIndex) + listItem.Content.slice(serverUpdate.Position)
+    }
+    if(editedTaskIdinDB === listItem.id){
+        console.log('Update edit ref')
+        editFieldContent.value = listItem.Content
     }
 }
 onBeforeUnmount(() => {
@@ -302,6 +312,7 @@ async function EditTask(taskId, taskIdInDB) {
     task.value = Tasks.value[taskId].Content;
     editedTaskId = taskId;
     editedTaskIdinDB = taskIdInDB;
+    editFieldContent.value = Tasks.value[editedTaskId].Content
 }
 
 async function OnCheck(taskId, taskIdInDB) {
@@ -342,7 +353,7 @@ async function OnUnCheck(taskId, taskIdInDB) {
         <h1>{{ TodoName }}</h1>
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
-            <input v-if="editedTaskId != null" v-model="Tasks[editedTaskId].Content" type="Content" v-on:input="debouncedHandler" id="taskField" class="form-control" @input="getCursor($event)">
+            <input v-if="editedTaskId != null" v-model="editFieldContent" type="Content" v-on:input="debouncedHandler" id="taskField" class="form-control" @input="getCursor($event)">
             <input v-else v-model="task" type="Content" id="taskField" placeholder="Neues Todo hinzufügen" class="form-control">
             <button v-if="editedTaskId != null" @click="CreateTask" class="btn btn-primary">Edit</button>
             <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
@@ -357,7 +368,8 @@ async function OnUnCheck(taskId, taskIdInDB) {
                         <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
                                  <!-- Task value -->
                                 <span class="d-sm-none col-sm-1">{{ todo.idInFrontendList + 1 }}:&nbsp;</span>
-                                <span>{{ todo.Content }}</span>
+                                <span v-if="editedTaskId === todo.idInFrontendList">{{ editFieldContent }}</span>
+                                <span v-else>{{ todo.Content }}</span>
                                 <button v-if="currentRole === 1" @click="EditTask(todo.idInFrontendList, todo.id)" class="btn btn-secondary"
                                     style="font-size: x-small; padding: 0.3%; margin-right: 3px; margin-left: 20px;">Edit</button>
                                 <!-- Delete Button -->
