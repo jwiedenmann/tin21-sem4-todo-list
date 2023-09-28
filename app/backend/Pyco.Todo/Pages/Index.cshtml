@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="row w-100 py-3 mt-3 align-items-center justify-content-center shadow p-3 mb-5 rounded" style="background-color: rgba(243, 241, 241, 0.753);">
+<div class="row m-1 py-3 mt-3 align-items-center justify-content-center shadow p-3 mb-5 rounded" style="background-color: rgba(243, 241, 241, 0.753);">
         <h1 class="text-center fw-bold py-5" style="color:#2c3e50; font-size: 3em;">PYCO TODO</h1>
 </div>
 @if (Model.FormResult.Length > 0)
@@ -13,7 +13,7 @@
 }
 <div class="container align-items-center g-4 py-5">
     <div class="row justify-content-center align-items-center rounded-3">
-        <div class="col-4 justify-content-center p-2 m-1 rounded-4 shadow p-3 mb-5 rounded" style="background-color: rgba(253, 162, 102, 0.985)">
+        <div class="col col-md-6 justify-content-center p-2 m-1 rounded-4 shadow p-3 mb-5 rounded" style="background-color: rgba(253, 162, 102, 0.985)">
             <form class="form-signin justify-content-center text-center" method="post" asp-area="" asp-page="Index">
                     <img class="mb-4" src="Assets/todo-svglogo.svg" alt="Pyco Todo" width="72" height="72">
                 <h3 class="h3 mb-3 font-weight-normal">Log In</h3>

@@ -144,11 +144,11 @@ function updateRole(userId, newRole) {
         <form id="editTodoListForm">
             <div class="form-group">
                 <div class="input-group">
-                    <div class="form-control col-sm-10 control-no-border">
+                    <div class="form-control col control-no-border">
                         <div class="titleInput">
-                            <div class="input-group">
-                                <label for="listTitle" class="col-sm-2 col-form-label">Title</label>
-                                <div class="col-sm-10 control-no-border">
+                            <div class="input-group row justify-content-md-center">
+                                <label for="listTitle" class="col col-lg-2 col-form-label">Title</label>
+                                <div class="col-md-auto col-lg-8 control-no-border">
                                     <input type="text" class="form-control rounded" id="listTitle"
                                         aria-describedby="listTitle" v-model="title" required>
                                 </div>
@@ -157,15 +157,18 @@ function updateRole(userId, newRole) {
                     </div>
                 </div>
                 <div class="input-group">
-                    <div class=" form-control col-sm-10 control-no-border">
+                    <div class=" form-control col control-no-border">
                         <div class="search-bar">
-                            <div class="input-group">
-                                <label for="addUser" class="col-sm-2 col-form-label">Add User</label>
-                                <input id="addUser" type="search" v-model="searchInput" class="form-control rounded"
+                            <div class="input-group row justify-content-md-center">
+                                <label for="addUser" class="col col-lg-2 col-form-label">Add User</label>
+                                <div class="col-md-auto col-lg-8 d-flex">
+                                    <input id="addUser" type="search" v-model="searchInput" class="form-control rounded"
                                     placeholder="Search for user to add..." aria-label="Search"
                                     aria-describedby="addUser" />
-                                <button type="button" class="btn btn-outline-primary" @click="searchUser(searchInput)"><i
+                                    <button type="button" class="btn btn-outline-primary" @click="searchUser(searchInput)"><i
                                         class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                               
                             </div>
                         </div>
                         <ul class="list-group" id="searchResultList">
@@ -205,7 +208,7 @@ function updateRole(userId, newRole) {
             <hr />
             <h3>Shared users</h3>
             <div class="form-group row d-flex justify-content-center align-items-center">
-                <ul class="list-group col-sm-8">
+                <ul class="list-group col-md-8">
                     <li v-for="user in users" :key="user.Id" class="suListItem">
                         <ListUserComponentVue :userId="user.Id" :userRole="user.ListUserRole" :userName="user.Username"
                             @remove-user="removeUser" @update-role="updateRole" />
