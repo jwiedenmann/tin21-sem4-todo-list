@@ -50,6 +50,24 @@ where username = @username;";
         return connection.QueryFirstOrDefault<User?>(query, new { username });
     }
 
+    public User? GetByEmail(string email)
+    {
+        const string query = @"
+select
+    id,
+    username,
+    password,
+    email,
+    archive,
+    creationDate
+from ""user""
+where email = @email;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.QueryFirstOrDefault<User?>(query, new { email });
+    }
+
     public IEnumerable<User> GetListUsers(int listId)
     {
         const string query = @"

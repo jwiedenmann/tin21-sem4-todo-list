@@ -6,6 +6,7 @@ namespace Pyco.Todo.DataAccess.Interfaces
     {
         IEnumerable<User> Get();
         User? Get(string username);
+        User? GetByEmail(string email);
         /// <summary>
         /// Returns the users within one list, including the useres roles.
         /// </summary>
