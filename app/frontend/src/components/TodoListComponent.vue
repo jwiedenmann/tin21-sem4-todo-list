@@ -98,8 +98,8 @@ client.on('message', function (topic, message) {
     console.log('im ServerACK')
     sentChanges.value = {}
     let messageObj = JSON.parse(message.toString())
-    Tasks.value[editedTaskId].lastSyncedRevision = messageObj.NewRevisionId
-    console.log('Die neue Rev ID vom ServerACK: ', Tasks.value[editedTaskId].lastSyncedRevision)
+    Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).lastSyncedRevision = messageObj.NewRevisionId
+    console.log('Die neue Rev ID vom ServerACK: ', Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).lastSyncedRevision)
     if(pendingChanges.value.length){
         let clientUpdate = pendingChanges.value.shift()
         console.log('Sending this to server from the pending changes Queue:', clientUpdate)
@@ -152,11 +152,13 @@ function getCursor(event) {
 }
 
 function sendUpdate(listItemId, lsr, isInsert, position, length, value){
+    let userId = parseInt(store.state.user.id);
     let currentChange = {
     "listItemId": listItemId,
     "lastSyncedRevision": lsr,
     "isInsert": isInsert,
     "position": position - 1,
+    "userId" : userId,
     "length": length,
     "value": value
   }
