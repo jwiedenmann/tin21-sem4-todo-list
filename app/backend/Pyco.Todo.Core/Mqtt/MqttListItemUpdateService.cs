@@ -5,15 +5,17 @@ using Pyco.Todo.Data.ViewModels;
 using Pyco.Todo.DataAccess.Interfaces;
 using Pyco.Todo.Data.Models;
 using Mqtt.Client.AspNetCore.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace Pyco.Todo.Services;
+namespace Pyco.Todo.Core;
 
 public class MqttListItemUpdateService : IMqttClientService
 {
     private readonly IMqttClient _mqttClient;
     private readonly MqttClientOptions _options;
     private readonly IConfiguration _configuration;
-    private readonly IListItemRepository _itemRepository;
+    private readonly IListItemRepository _listItemRepository;
     private readonly ILogger<MqttListItemUpdateService> _logger;
     private readonly string _clientUpdateTopic;
     private readonly string _clientUpdateAckTopic;
@@ -30,7 +32,7 @@ public class MqttListItemUpdateService : IMqttClientService
     {
         _options = options;
         _configuration = configuration;
-        _itemRepository = itemRepository;
+        _listItemRepository = itemRepository;
         _mqttClient = new MqttFactory().CreateMqttClient();
         _logger = logger;
         _clientUpdateTopic = _configuration.GetValue<string>("Mqtt:ListClientUpdate");
@@ -87,7 +89,7 @@ public class MqttListItemUpdateService : IMqttClientService
 
         if (!_listItems.TryGetValue(clientUpdate.ListItemId, out ListItem? listItem))
         {
-            listItem = _itemRepository.GetListItem(clientUpdate.ListItemId);
+            listItem = _listItemRepository.GetListItem(clientUpdate.ListItemId);
 
             if (listItem is null)
             {
@@ -125,6 +127,7 @@ public class MqttListItemUpdateService : IMqttClientService
             ListItemClientUpdate = clientUpdate,
         };
         await PublishAcknowledge(serverAck);
+        _listItemRepository.Update(listItem.Id, listItem.Content);
 
         return;
     }
@@ -188,8 +191,6 @@ public class MqttListItemUpdateService : IMqttClientService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        //await _mqttClient.ConnectAsync(_options);
-
         Task.Run(async () =>
         {
             // User proper cancellation and no while(true).
@@ -206,7 +207,7 @@ public class MqttListItemUpdateService : IMqttClientService
                         _logger.LogInformation("The MQTT client is connected.");
                     }
                 }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     // Handle the exception properly (logging etc.).
                     _logger.LogError(ex, "The MQTT client  connection failed");
