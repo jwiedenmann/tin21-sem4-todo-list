@@ -112,8 +112,11 @@ async function openAdminView(listId){
       if(role == 1 || listId == null){
         showAdminView.value = true;
         forceRerenderer(adminComponentKey)
-        const element = document.getElementById('admin-element');
-        element.scrollIntoView({ behavior: 'smooth' });
+        if(screen.width < 1400){
+          const element = document.getElementById('admin-element');
+          console.log("Screen Width: " + screen.width)
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }else{
         alert("Only an admin has the permission to to this")
       }
@@ -134,6 +137,11 @@ async function openTodoList(listId){
     showAdminView.value = false
     showTodoView.value = true
     forceRerenderer(todoComponentKey)
+    if(screen.width < 1400){
+      const element = document.getElementById('admin-element');
+      console.log("Screen Width: " + screen.width)
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
   console.log(list)
 }

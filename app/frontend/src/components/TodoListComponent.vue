@@ -43,7 +43,6 @@ const changeValue = ref('')
 const sentChanges = ref({})
 const pendingChanges = ref([])
 const taskInEdit = ref(null)
-
 const Tasks = ref([])
 const Users = ref([])
 
@@ -96,6 +95,7 @@ client.on('message', function (topic, message) {
     emit('reloadTodos', props.listId)
   }else if(topic.startsWith(topics.SERVER_ACK)){
     sentChanges.value = {}
+    //Tasks.value[idAusAck].lastSyncedRevision += 1
     if(pendingChanges.value.length){
         let clientUpdate = pendingChanges.value.shift()
         console.log('Sending this to server:', clientUpdate)
@@ -149,9 +149,10 @@ function getCursor(event) {
 
 function sendUpdate(listItemId, isInsert, position, length, value){
     let currentChange = {
+    //"lastSyncedRevision": lsr,
     "listItemId": listItemId,
     "isInsert": isInsert,
-    "position": position,
+    "position": position - 1,
     "length": length,
     "value": value
   }
@@ -200,14 +201,15 @@ onMounted(async () => {
     for (let i = 0; i < todoListItems.length; i++) {
         let checkedByCurrentUser = false
         if (todoListItems[i].checkedByUserIds.indexOf(currentUserId.value) >= 0) checkedByCurrentUser = true;
-
+        //let lsr = todoListItems[i].lastSyncedRevision
         console.log(todoListItems[i].content);
         Tasks.value.push({
             id: todoListItems[i].id,
             idInFrontendList: TaskIdCunt++,
             Content: todoListItems[i].content,
             checkedSum: todoListItems[i].checkedByUserIds.length,
-            isCheckedByCurrentUser: checkedByCurrentUser
+            isCheckedByCurrentUser: checkedByCurrentUser,
+            //lastSyncedRevision: lsr
         })
     }
 
@@ -323,51 +325,50 @@ async function OnUnCheck(taskId, taskIdInDB) {
             <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
         </div>
         <hr>
-        <div class="row row-cols-2 m-5">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <!-- List of Tasks -->
+                <div class="col col-lg-8 mb-2">
+                    <ul class="list-group list-group-hover">
+                        <li class="list-group-item" style="font-weight: bold; background: lightgray;">Tasks:</li>
+                        <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
+                                 <!-- Task value -->
+                                <span class="d-sm-none col-sm-1">{{ todo.idInFrontendList + 1 }}:&nbsp;</span>
+                                <span>{{ todo.Content }}</span>
+                                <button v-if="currentRole === 1" @click="EditTask(todo.idInFrontendList, todo.id)" class="btn btn-secondary"
+                                    style="font-size: x-small; padding: 0.3%; margin-right: 3px; margin-left: 20px;">Edit</button>
+                                <!-- Delete Button -->
+                                <button v-if="currentRole === 1" @click="DeleteTask(todo.Content, todo.id)" class="btn btn-danger"
+                                    style="font-size: x-small; padding: 0.3%;">Entfernen</button>
+                        </li>
+                        <li class="list-group-item" v-show="Tasks.length === 0">Keine Tasks vorhanden</li>
+                    </ul>
+                </div>
 
-            <!-- List of Tasks -->
-            <div class="col-8">
-                <ul class="list-group  list-group-hover">
-                    <li class="list-group-item" style="font-weight: bold; background: lightgray;">Tasks:</li>
-                    <li v-for="todo in Tasks" :key="todo.id" class="list-group-item">
-                        <!-- Task value -->
-                        {{ todo.Content }}
+                <!-- List of completed Tasks -->
+                <div class="col-sm-auto mb-2">
+                    <ul class="list-group">
+                        <li class="list-group-item" style="font-weight: bold; background: lightgray">{{ currentUser }}</li>
+                        <li v-for="todos in Tasks" :key="todos.id" class="list-group-item">
+                            <span class="d-sm-none col-sm-1">{{ todos.idInFrontendList + 1 }}:&nbsp;</span>
+                            <button @click="OnUnCheck(todos.idInFrontendList, todos.id)" v-if="todos.isCheckedByCurrentUser"
+                                class="btn btn-success" style="font-size: x-small; padding: 0.3%;">Done</button>
+                            <button @click="OnCheck(todos.idInFrontendList, todos.id)" v-else class="btn btn-primary"
+                                style="font-size: x-small; padding: 0.3%;">Abhaken</button>
+                        </li>
+                    </ul>
+                </div>
 
-                        <button v-if="currentRole === 1" @click="EditTask(todo.idInFrontendList, todo.id)" class="btn btn-secondary"
-                            style="font-size: x-small; padding: 0.3%; margin-right: 3px; margin-left: 20px;">Edit</button>
-                        <!-- Delete Button -->
-                        <button v-if="currentRole === 1" @click="DeleteTask(todo.Content, todo.id)" class="btn btn-danger"
-                            style="font-size: x-small; padding: 0.3%;">Entfernen</button>
-                    </li>
-                    <li class="list-group-item" v-show="Tasks.length === 0">Keine Tasks vorhanden</li>
-                </ul>
-            </div>
-
-            <!-- List of completed Tasks -->
-            <div class="col-2">
-                <ul class="list-group">
-                    <li class="list-group-item" style="font-weight: bold; background: lightgray">{{ currentUser }}</li>
-                    <li v-for="todos in Tasks" :key="todos.id" class="list-group-item">
-                        <button @click="OnUnCheck(todos.idInFrontendList, todos.id)" v-if="todos.isCheckedByCurrentUser"
-                            class="btn btn-success" style="font-size: x-small; padding: 0.3%;">Done</button>
-                        <button @click="OnCheck(todos.idInFrontendList, todos.id)" v-else class="btn btn-primary"
-                            style="font-size: x-small; padding: 0.3%;">Abhaken</button>
-                    </li>
-                </ul>
-                <!-- <button type="button" class="btn btn-success btn-lg mt-2" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
-                    Alle anzeigen
-                </button> -->
-            </div>
-
-            <div class="col-2">
-                <ul class="list-group">
-                    <li class="list-group-item" style="font-weight: bold; background: lightgray">Done by</li>
-                    <li v-for="task in Tasks" :key="task.id" class="list-group-item">
-                        {{ task.checkedSum }} / {{ Users.length }}
-                    </li>
-                    <li class="list-group-item" style="font-weight: bold; background: lightgray">users</li>
-                </ul>
+                <div class="col-sm-auto mb-2">
+                    <ul class="list-group">
+                        <li class="list-group-item" style="font-weight: bold; background: lightgray">Done by</li>
+                        <li v-for="task in Tasks" :key="task.id" class="list-group-item">
+                            <span class="d-sm-none col-sm-1">{{ task.idInFrontendList + 1 }}:&nbsp;</span>
+                            {{ task.checkedSum }} / {{ Users.length }}
+                        </li>
+                        <li class="list-group-item" style="font-weight: bold; background: lightgray">users</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
