@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using Pyco.Todo.DataAccess.Interfaces;
 using Pyco.Todo.Data.Models;
 using System.Security.Cryptography.Xml;
+using System;
 
 namespace Mqtt.Client.AspNetCore.Services;
 
@@ -41,6 +42,7 @@ public class MqttListItemUpdateService : IMqttClientService
 
         _clientUpdates = new Dictionary<int, List<ListItemClientUpdate>>();
         _listItems = new Dictionary<int, ListItem>();
+        _revisionIds = new Dictionary<int, int>();
 
         ConfigureMqttClient();
     }
@@ -52,14 +54,32 @@ public class MqttListItemUpdateService : IMqttClientService
         _mqttClient.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
     }
 
-    public Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
+    public (int revisionId, string listItemContent)? TryGetListItemContent(int listItemId)
+    {
+        if (_listItems.TryGetValue(listItemId, out ListItem? listItem) &&
+            _revisionIds.TryGetValue(listItemId, out int revisionId) &&
+            listItem is not null)
+        {
+            return (revisionId, listItem.Content);
+        }
+
+        return null;
+    }
+
+    public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         string content = eventArgs.ApplicationMessage.ConvertPayloadToString();
-        ListItemClientUpdate? clientUpdate = JsonSerializer.Deserialize<ListItemClientUpdate>(content);
+        ListItemClientUpdate? clientUpdate = JsonSerializer
+            .Deserialize<ListItemClientUpdate>(
+            content,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
         if (clientUpdate is null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         // get the corresponding updates, listitem and revision from the stores
@@ -75,7 +95,7 @@ public class MqttListItemUpdateService : IMqttClientService
 
             if (listItem is null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
             _listItems.Add(clientUpdate.ListItemId, listItem);
@@ -89,7 +109,7 @@ public class MqttListItemUpdateService : IMqttClientService
         // check client revision
         if (clientUpdate.LastSyncedRevision > revision)
         {
-            return Task.CompletedTask;
+            return;
         }
         else if (clientUpdate.LastSyncedRevision < revision)
         {
@@ -108,9 +128,9 @@ public class MqttListItemUpdateService : IMqttClientService
             NewRevisionId = revision + 1,
             ListItemClientUpdate = clientUpdate,
         };
-        PublishAcknowledge(serverAck);
+        await PublishAcknowledge(serverAck);
 
-        return Task.CompletedTask;
+        return;
     }
 
     private void TransformClientUpdate(ListItemClientUpdate clientUpdate, List<ListItemClientUpdate> listItemUpdates)
@@ -123,7 +143,7 @@ public class MqttListItemUpdateService : IMqttClientService
             {
                 clientUpdate.Position += update.Length;
             }
-            else if (!update.IsInsert )
+            else if (!update.IsInsert)
             {
 
             }
