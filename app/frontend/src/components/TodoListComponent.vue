@@ -91,8 +91,8 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
   // message is Buffer
   console.log("Received:" + message.toString() + " from Topic: " + topic.toString())
-  if(topic.toString() === topics.LIST_TOPIC){
-    console.log('im Reloaaaad')
+  if(topic.toString() === topics.LIST_TOPIC + props.listId){
+    console.log('Reload Todos')
     emit('reloadTodos', props.listId)
   }else if(topic.toString() === topics.SERVER_ACK){
     console.log('im ServerACK')
@@ -195,7 +195,10 @@ const debouncedHandler = debounce(event => {
 }, 500);
 
 function applyChanges(listItem, serverUpdate){
-    if(serverUpdate.IsInsert){
+    if(typeof listItem.Content === "undefined"){
+        console.log('Something went wrong, reload todo elements')
+        emit('reloadTodos', props.listId)
+    }else if(serverUpdate.IsInsert){
         listItem.Content = listItem.Content.slice(0, serverUpdate.Position) + serverUpdate.Value + listItem.Content.slice(serverUpdate.Position)
     }else {
         let startIndex = serverUpdate.Position - serverUpdate.Length
@@ -339,7 +342,8 @@ async function OnUnCheck(taskId, taskIdInDB) {
         <h1>{{ TodoName }}</h1>
         <!-- Add Task -->
         <div class="d-flex mt-5 mb-5">
-            <input v-model="task" type="Content" v-on:input="debouncedHandler" id="taskField" placeholder="Neues Todo hinzufügen" class="form-control" @input="getCursor($event)">
+            <input v-if="editedTaskId != null" v-model="Tasks[editedTaskId].Content" type="Content" v-on:input="debouncedHandler" id="taskField" class="form-control" @input="getCursor($event)">
+            <input v-else v-model="task" type="Content" id="taskField" placeholder="Neues Todo hinzufügen" class="form-control">
             <button v-if="editedTaskId != null" @click="CreateTask" class="btn btn-primary">Edit</button>
             <button v-else @click="CreateTask" class="btn btn-primary">Hinzufügen</button>
         </div>
