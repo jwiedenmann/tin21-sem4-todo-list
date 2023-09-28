@@ -21,16 +21,7 @@ let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
 
-//mqtt stuff
-let subscribeSuccess = false
-let connecting = false
-let retryTimes = 0
-let receiveNews = ""
-let qosList = [0, 1, 2]
-let subscription = {
-        topic: topics.USER_TOPIC,
-        qos: 0,
-      }
+//mqtt connection to broker via websocket
 let connection = {
         protocol: "ws",
         host: "localhost",
@@ -46,10 +37,6 @@ let connection = {
         username: "user1",
         password: "1234",
 }
-/*let client = {
-        connected: false,
-      }
-*/
 const { protocol, host, port, endpoint, ...options } = connection;
         const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 console.log(connectUrl)
@@ -161,14 +148,14 @@ function formatDate(date) {
 }
 </script>
 <template>
-  <div class="row flex-grow-1 h-75 mb-4 rounded-3" style="background-color: white;">
+  <div class="row flex-grow-1 h-75 mb-4 rounded-4" style="background-color: white;">
     <div v-if="statusMsg" class="alert alert-primary" role="alert">
       {{ statusMsg }}
     </div>
     <div class="container-fluid flex-column d-flex">
       <div class="row flex-grow-1">
         <div class="col-xxl-4">
-          <div class="row border-end border-bottom rounded-top-3 rounded-end-0 p-3 text-light"
+          <div class="row border-end border-bottom rounded-3 p-3 text-light"
             style="background-color: #54B4D3;">{{ loggedInUser }}</div>
           <div  v-if="dataReady">
             <ul class="list-group">
@@ -185,6 +172,7 @@ function formatDate(date) {
           </div>
           <hr />
           <button type="button" class="btn btn-success mb-4 w-100" @click="openAdminView(null)">Neue Todo Liste erstellen</button>
+          <hr class="d-md-none"/>
         </div>
         <div class="col-auto d-flex flex-grow-1 flex-column pd-1 justify-content-center" id="admin-element">
           <ListAdminVue v-if="showAdminView" :key="adminComponentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>

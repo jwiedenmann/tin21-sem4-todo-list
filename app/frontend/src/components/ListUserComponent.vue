@@ -17,7 +17,7 @@ function updateRole() {
 </script>
 
 <template>
-    <span class="w-100 row list-group-item d-flex justify-content-between align-items-center listUserComponent">
+    <span class="row list-group-item d-flex justify-content-between align-items-center listUserComponent">
         <i v-if="selected === '2'" class="fa-solid fa-user col-sm-1 role-icon"></i>
         <i v-else-if="selected === '1'" class="fa-solid fa-user-gear col-sm-1 role-icon"></i>
         <i v-else class="fa-solid fa-glasses col-sm-1 role-icon"></i>
@@ -30,7 +30,7 @@ function updateRole() {
             </select>
         </span>
         <span class="col-sm-4" id="userName">{{ userName }}</span>
-        <button type="button" class="btn btn-danger col-sm-1" @click="emit('removeUser', userId)"><i
+        <button type="button" class="btn btn-danger col-sm-2" @click="emit('removeUser', userId)"><i
                 class="fa-solid fa-trash-can"></i></button>
     </span>
 </template>
