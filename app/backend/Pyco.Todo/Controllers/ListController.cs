@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Mqtt.Client.AspNetCore.Services;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Core.Exception;
 using Pyco.Todo.Core.Mqtt;
@@ -16,17 +17,20 @@ namespace Pyco.Todo.Controllers
         private readonly IListDataProvider _listDataProvider;
         private readonly IListRepository _listRepository;
         private readonly MqttHelper _mqttHelper;
+        private readonly MqttListItemUpdateService _listItemUpdateService;
 
         public ListController(
             IConfiguration configuration,
             IListDataProvider listDataProvider,
             IListRepository listRepository,
-            MqttHelper mqttHelper)
+            MqttHelper mqttHelper,
+            MqttListItemUpdateService listItemUpdateService)
         {
             _configuration = configuration;
             _listDataProvider = listDataProvider;
             _listRepository = listRepository;
             _mqttHelper = mqttHelper;
+            _listItemUpdateService = listItemUpdateService;
         }
 
         [HttpGet("user")]
@@ -52,7 +56,22 @@ namespace Pyco.Todo.Controllers
                 throw new UnauthorizedException();
             }
 
-            return Ok(_listDataProvider.Get(listId, user.Id));
+            List? list = _listDataProvider.Get(listId, user.Id);
+
+            if (list == null) return Ok(null);
+
+            foreach (var listItem in list?.ListItems ?? new List<ListItem>())
+            {
+                var result = _listItemUpdateService.TryGetListItemContent(listItem.Id);
+
+                if (result != null)
+                {
+                    listItem.RevisionId = result.Value.revisionId;
+                    listItem.Content = result.Value.listItemContent;
+                }
+            }
+
+            return Ok(list);
         }
 
         [HttpPost]
