@@ -16,4 +16,5 @@ public interface IListItemRepository
     int Insert(ListItem list);
     int Uncheck(int listItemId, int userId);
     int Update(ListItem list);
+    int Update(int listItemId, string content);
 }

@@ -1,23 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using MQTTnet;
+﻿using MQTTnet;
 using MQTTnet.Client;
 using System.Text.Json;
 using Pyco.Todo.Data.ViewModels;
-using System.Collections.Concurrent;
 using Pyco.Todo.DataAccess.Interfaces;
 using Pyco.Todo.Data.Models;
-using System.Security.Cryptography.Xml;
-using System;
+using Mqtt.Client.AspNetCore.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace Mqtt.Client.AspNetCore.Services;
+namespace Pyco.Todo.Core;
 
 public class MqttListItemUpdateService : IMqttClientService
 {
     private readonly IMqttClient _mqttClient;
     private readonly MqttClientOptions _options;
     private readonly IConfiguration _configuration;
-    private readonly IListItemRepository _itemRepository;
+    private readonly IListItemRepository _listItemRepository;
     private readonly ILogger<MqttListItemUpdateService> _logger;
     private readonly string _clientUpdateTopic;
     private readonly string _clientUpdateAckTopic;
@@ -34,7 +32,7 @@ public class MqttListItemUpdateService : IMqttClientService
     {
         _options = options;
         _configuration = configuration;
-        _itemRepository = itemRepository;
+        _listItemRepository = itemRepository;
         _mqttClient = new MqttFactory().CreateMqttClient();
         _logger = logger;
         _clientUpdateTopic = _configuration.GetValue<string>("Mqtt:ListClientUpdate");
@@ -91,7 +89,7 @@ public class MqttListItemUpdateService : IMqttClientService
 
         if (!_listItems.TryGetValue(clientUpdate.ListItemId, out ListItem? listItem))
         {
-            listItem = _itemRepository.GetListItem(clientUpdate.ListItemId);
+            listItem = _listItemRepository.GetListItem(clientUpdate.ListItemId);
 
             if (listItem is null)
             {
@@ -129,6 +127,7 @@ public class MqttListItemUpdateService : IMqttClientService
             ListItemClientUpdate = clientUpdate,
         };
         await PublishAcknowledge(serverAck);
+        _listItemRepository.Update(listItem.Id, listItem.Content);
 
         return;
     }
@@ -179,16 +178,19 @@ public class MqttListItemUpdateService : IMqttClientService
         await _mqttClient.SubscribeAsync(_clientUpdateTopic);
     }
 
-    public Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
+    public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
     {
         _logger.LogInformation("HandleDisconnected");
-        return Task.CompletedTask;
+
+        if (eventArgs.ClientWasConnected)
+        {
+            // Use the current options as the new options.
+            await _mqttClient.ConnectAsync(_mqttClient.Options);
+        }
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        //await _mqttClient.ConnectAsync(_options);
-
         Task.Run(async () =>
         {
             // User proper cancellation and no while(true).
@@ -205,7 +207,7 @@ public class MqttListItemUpdateService : IMqttClientService
                         _logger.LogInformation("The MQTT client is connected.");
                     }
                 }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     // Handle the exception properly (logging etc.).
                     _logger.LogError(ex, "The MQTT client  connection failed");

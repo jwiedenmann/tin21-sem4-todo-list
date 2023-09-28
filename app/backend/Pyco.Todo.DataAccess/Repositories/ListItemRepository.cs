@@ -125,6 +125,19 @@ where id = @id;";
         return connection.Execute(query, list);
     }
 
+    public int Update(int listItemId, string content)
+    {
+        const string query = @"
+update listItem 
+set
+    content = @content
+where id = @listItemId;";
+
+        using var connection = new NpgsqlConnection(_connectionstring);
+        connection.Open();
+        return connection.Execute(query, new { listItemId, content });
+    }
+
     public int Archive(int id)
     {
         const string query = @"

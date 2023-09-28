@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mqtt.Client.AspNetCore.Services;
+using Pyco.Todo.Core;
 using Pyco.Todo.Core.Authorization.Attributes;
 using Pyco.Todo.Core.Exception;
 using Pyco.Todo.Core.Mqtt;
