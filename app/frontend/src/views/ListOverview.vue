@@ -177,9 +177,9 @@ function formatDate(date) {
         <div class="col-auto d-flex flex-grow-1 flex-column pd-1 justify-content-center" id="admin-element">
           <ListAdminVue v-if="showAdminView" :key="adminComponentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
           <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId" @reload-todos="openTodoList" id="todoElement"/>
-          <div v-else class=" box d-flex align-items-center justify-content-center h-auto">              
+          <div v-else class="box row d-flex align-items-center justify-content-center">              
               <div class="align-items-center justify-content-center pb-1 mb-1">
-                <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
+                <h2 class="p-2 m-2 text-wrap">Willkommen, {{ loggedInUser }}!</h2>
                 <div class="row row-cols-1 row-cols-md-2 g-4">
                   <div v-if="todoList.length" class="col">
                     <div class="card h-100">

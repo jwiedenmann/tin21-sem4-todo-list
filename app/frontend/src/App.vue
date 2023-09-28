@@ -14,7 +14,7 @@ store.commit('updateJwtToken', jwtToken);
       </a>
       <a href="http://localhost:5000/" class="btn btn-danger text-center text-wrap d-inline col-2">Log Out</a>
     </header>
-    <router-view class="m-1"/>
+    <router-view class="m-1 p-1"/>
     <footer class="text-center pt-3 text-body-secondary border-top">
     <p>
       &copy; 2023
