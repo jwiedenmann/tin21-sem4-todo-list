@@ -3,6 +3,7 @@ import store from './store';
 
 let jwtToken = window.$cookies.get('jwt');
 store.commit('updateJwtToken', jwtToken);
+
 </script>
 
 <template>
@@ -14,12 +15,12 @@ store.commit('updateJwtToken', jwtToken);
       </a>
       <a href="http://localhost:5000/" class="btn btn-danger text-center text-wrap d-inline col-2">Log Out</a>
     </header>
-    <router-view class="m-1 p-1"/>
+    <router-view class="m-1 p-1" />
     <footer class="text-center pt-3 text-body-secondary border-top">
-    <p>
-      &copy; 2023
-    </p>
-  </footer>
+      <p>
+        &copy; 2023
+      </p>
+    </footer>
   </div>
 </template>
 
@@ -29,12 +30,14 @@ html {
   background-color: #EEEEEE;
 }
 
-#siteTitle{
+#siteTitle {
   color: #EEEEEE;
 }
-.pycobar{
+
+.pycobar {
   background-color: #757575;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
