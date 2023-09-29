@@ -214,6 +214,7 @@ function applyChanges(listItem, serverUpdate){
     if(editedTaskIdinDB === listItem.id){
         console.log('Update edit ref')
         editFieldContent.value = listItem.Content
+        Tasks.value.find((el) => el.id == editedTaskIdinDB).Content = listItem.Content
     }
 }
 onBeforeUnmount(() => {
