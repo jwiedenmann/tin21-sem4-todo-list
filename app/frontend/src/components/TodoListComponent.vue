@@ -99,7 +99,9 @@ client.on('message', function (topic, message) {
     console.log('im ServerACK')
     sentChanges.value = {}
     let messageObj = JSON.parse(message.toString())
-    Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).Content = editFieldContent.value
+    if(editFieldContent.value && editedTaskIdinDB === messageObj.ListItemClientUpdate.ListItemId){
+        Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).Content = editFieldContent.value
+    }
     if(messageObj.ListItemClientUpdate.UserId != parseInt(store.state.user.id)){
         //update from another user, apply changes
         applyChanges(Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId), messageObj.ListItemClientUpdate)
@@ -215,7 +217,7 @@ function applyChanges(listItem, serverUpdate){
     if(editedTaskIdinDB === listItem.id){
         console.log('Update edit ref')
         editFieldContent.value = listItem.Content
-        Tasks.value.find((el) => el.id == editedTaskIdinDB).Content = listItem.Content
+        //Tasks.value.find((el) => el.id == editedTaskIdinDB).Content = listItem.Content
     }
 }
 onBeforeUnmount(() => {
