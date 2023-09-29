@@ -16,6 +16,9 @@ app.provide('axios', app.config.globalProperties.axios);
 
 app.axios.defaults.baseURL = process.env.VUE_APP_TODO_BASE_URL;
 app.config.errorHandler = function (err, vm, info) {
+    console.log(err);
+    console.log(vm);
+    console.log(info);
     let url = window.location.protocol + "//" + window.location.hostname;
     window.location.replace(url);
 }
