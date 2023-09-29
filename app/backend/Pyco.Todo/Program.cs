@@ -25,14 +25,17 @@ if (app.Environment.IsDevelopment())
 //    app.UseHsts();
 //}
 
-#if DEBUG
+//#if DEBUG
 app.UseCors(x => x
     .AllowAnyHeader()
     .AllowAnyMethod()
     .WithOrigins("http://localhost:8080")
     .WithOrigins("http://localhost:5000")
+    .WithOrigins("http://localhost:80")
+    .WithOrigins("http://localhost/")
+    .WithOrigins("http://localhost")
     .AllowCredentials());
-#endif
+//#endif
 
 //app.UseHttpsRedirection();
 //app.UseDefaultFiles();

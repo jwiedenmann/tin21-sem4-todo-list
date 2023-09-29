@@ -42,7 +42,7 @@ namespace Pyco.Todo.Areas.Registration.Pages
             }
 
             //check if Email already exists
-            /*existingUser = _userRepository.Get(userModel.Email);
+            existingUser = _userRepository.GetByEmail(userModel.Email);
 
             if (existingUser != null)
             {
@@ -50,7 +50,7 @@ namespace Pyco.Todo.Areas.Registration.Pages
 
                 return Page();
             }
-            */
+            
             //check if password in both input fields are the same
             if (!PasswordRepeat.Equals(userModel.Password))
             {

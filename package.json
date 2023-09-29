@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "mqtt": "^5.0.1"
+    "mqtt": "^5.0.1",
+    "v-debounce": "^0.2.0",
+    "vue-debounce": "^4.0.0"
   }
 }

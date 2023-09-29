@@ -1,4 +1,5 @@
-﻿using MQTTnet;
+﻿using Microsoft.Extensions.Configuration;
+using MQTTnet;
 using MQTTnet.Client;
 
 namespace Pyco.Todo.Core.Mqtt;
@@ -6,19 +7,22 @@ namespace Pyco.Todo.Core.Mqtt;
 public class MqttHelper : IDisposable
 {
     private readonly IMqttClient _mqttClient;
+    private readonly IConfiguration _configuration;
 
-    public MqttHelper()
+    public MqttHelper(IConfiguration configuration)
     {
         MqttFactory mqttFactory = new();
         _mqttClient = mqttFactory.CreateMqttClient();
+        _configuration = configuration;
     }
 
     public async Task Connect()
     {
         MqttClientOptions mqttClientOptions = new MqttClientOptionsBuilder()
-            .WithWebSocketServer(x => x.WithUri("ws://localhost:9001/mqtt"))
-            //.WithTcpServer("localhost", 1883)
-            .WithCredentials("user1", "1234")
+            .WithCredentials(
+                _configuration.GetValue<string>("Mqtt:Config:Username"),
+                _configuration.GetValue<string>("Mqtt:Config:Password"))
+            .WithWebSocketServer(x => x.WithUri(_configuration.GetValue<string>("Mqtt:Config:Uri")))
             .Build();
         await _mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
     }
