@@ -15,6 +15,7 @@ namespace Pyco.Todo.DataAccess.Interfaces
         /// <param name="username">username of the wanted user</param>
         /// <returns>The corrosponding user</returns>
         User? Get(string username);
+        User? GetByEmail(string email);
         /// <summary>
         /// Returns the users within one list, including the useres roles.
         /// </summary>

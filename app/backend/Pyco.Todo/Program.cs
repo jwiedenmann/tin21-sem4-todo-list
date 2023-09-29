@@ -31,6 +31,9 @@ app.UseCors(x => x
     .AllowAnyMethod()
     .WithOrigins("http://localhost:8080")
     .WithOrigins("http://localhost:5000")
+    .WithOrigins("http://localhost:80")
+    .WithOrigins("http://localhost/")
+    .WithOrigins("http://localhost")
     .AllowCredentials());
 //#endif
 

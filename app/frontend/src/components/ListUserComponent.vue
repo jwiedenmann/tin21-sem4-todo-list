@@ -17,11 +17,11 @@ function updateRole() {
 </script>
 
 <template>
-    <span class="w-100 row list-group-item d-flex justify-content-between align-items-center listUserComponent">
+    <span class="row list-group-item d-flex justify-content-between align-items-center listUserComponent">
         <i v-if="selected === '2'" class="fa-solid fa-user col-sm-1 role-icon"></i>
         <i v-else-if="selected === '1'" class="fa-solid fa-user-gear col-sm-1 role-icon"></i>
         <i v-else class="fa-solid fa-glasses col-sm-1 role-icon"></i>
-        <span class="col-sm-3">
+        <span class="col col-sm-3">
             <select v-model="selected" class="form-select" @change="updateRole()" aria-label="Select role for user"
                 name="userRole">
                 <option value="1">Admin</option>
@@ -29,9 +29,11 @@ function updateRole() {
                 <option value="3">Read only</option>
             </select>
         </span>
-        <span class="col-sm-4" id="userName">{{ userName }}</span>
-        <button type="button" class="btn btn-danger col-sm-1" @click="emit('removeUser', userId)"><i
+        <span class="col col-sm-4" id="userName">{{ userName }}</span>
+            <button type="button" class="btn btn-danger col col-sm-2" @click="emit('removeUser', userId)"><i
                 class="fa-solid fa-trash-can"></i></button>
+
+        
     </span>
 </template>
 

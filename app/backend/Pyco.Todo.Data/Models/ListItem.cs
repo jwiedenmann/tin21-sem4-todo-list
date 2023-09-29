@@ -9,5 +9,6 @@ public class ListItem
     public bool Archive { get; set; }
     public DateTime CreationDate { get; set; }
 
+    public int RevisionId { get; set; }
     public List<int> CheckedByUserIds { get; set; } = new List<int>();
 }

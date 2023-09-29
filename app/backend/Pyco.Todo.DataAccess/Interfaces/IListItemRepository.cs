@@ -18,12 +18,16 @@ public interface IListItemRepository
     /// <returns>Returns the number of rows which where effected</returns>
     int Check(int listItemId, int userId);
     /// <summary>
+    /// Get the listitem with the id
+    /// </summary>
+    ListItem? GetListItem(int listItemId, bool showArchived = false);
+    /// <summary>
     /// Get all the listitems in corrosponding list
     /// </summary>
     /// <param name="listId">Id of the corrosponding list</param>
     /// <param name="showArchived">True if archived items are needed</param>
     /// <returns>List of ListItem</returns>
-    IEnumerable<ListItem> Get(int listId, bool showArchived = false);
+    IEnumerable<ListItem> GetListItems(int listId, bool showArchived = false);
     /// <summary>
     /// Get a list of useres which checked a task
     /// </summary>
@@ -49,4 +53,5 @@ public interface IListItemRepository
     /// <param name="list">Listitem whick is beeing updated</param>
     /// <returns>Returns the number of rows which where effected</returns>
     int Update(ListItem list);
+    int Update(int listItemId, string content);
 }

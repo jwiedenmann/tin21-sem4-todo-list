@@ -21,16 +21,7 @@ let listItems = ref([])
 let createView = ref(false)
 let todoList = ref([])
 
-//mqtt stuff
-let subscribeSuccess = false
-let connecting = false
-let retryTimes = 0
-let receiveNews = ""
-let qosList = [0, 1, 2]
-let subscription = {
-        topic: topics.USER_TOPIC,
-        qos: 0,
-      }
+//mqtt connection to broker via websocket
 let connection = {
         protocol: "ws",
         host: "localhost",
@@ -46,10 +37,6 @@ let connection = {
         username: "user1",
         password: "1234",
 }
-/*let client = {
-        connected: false,
-      }
-*/
 const { protocol, host, port, endpoint, ...options } = connection;
         const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 console.log(connectUrl)
@@ -112,6 +99,11 @@ async function openAdminView(listId){
       if(role == 1 || listId == null){
         showAdminView.value = true;
         forceRerenderer(adminComponentKey)
+        if(screen.width < 1400){
+          const element = document.getElementById('admin-element');
+          console.log("Screen Width: " + screen.width)
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }else{
         alert("Only an admin has the permission to to this")
       }
@@ -132,6 +124,11 @@ async function openTodoList(listId){
     showAdminView.value = false
     showTodoView.value = true
     forceRerenderer(todoComponentKey)
+    if(screen.width < 1400){
+      const element = document.getElementById('admin-element');
+      console.log("Screen Width: " + screen.width)
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
   console.log(list)
 }
@@ -151,14 +148,14 @@ function formatDate(date) {
 }
 </script>
 <template>
-  <div class="row flex-grow-1 h-75 mb-4 rounded-3" style="background-color: white;">
+  <div class="row flex-grow-1 h-75 mb-4 rounded-4" style="background-color: white;">
     <div v-if="statusMsg" class="alert alert-primary" role="alert">
       {{ statusMsg }}
     </div>
     <div class="container-fluid flex-column d-flex">
       <div class="row flex-grow-1">
-        <div class="col-4">
-          <div class="row border-end border-bottom rounded-top-3 rounded-end-0 p-3 text-light"
+        <div class="col-xxl-4">
+          <div class="row border-end border-bottom rounded-3 p-3 text-light"
             style="background-color: #54B4D3;">{{ loggedInUser }}</div>
           <div  v-if="dataReady">
             <ul class="list-group">
@@ -175,21 +172,36 @@ function formatDate(date) {
           </div>
           <hr />
           <button type="button" class="btn btn-success mb-4 w-100" @click="openAdminView(null)">Neue Todo Liste erstellen</button>
+          <hr class="d-md-none"/>
         </div>
-        <div class="col-md-auto flex-grow-1 pd-2">
+        <div class="col-auto d-flex flex-grow-1 flex-column pd-1 justify-content-center" id="admin-element">
           <ListAdminVue v-if="showAdminView" :key="adminComponentKey" :list-title="listTitle" :list-users="listUsers" :new-list="createView" :list-id="todoListId"/>
-          <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId" @reload-todos="openTodoList"/>
-          <div v-else class="row d-flex align-items-center justify-content-center h-100">
-            <div>
-              <div class="row align-items-center justify-content-center">
-                <h1 class="p-2 m-2 rounded-2">Willkommen, {{ loggedInUser }}!</h1>
-                <button v-if="todoList.length" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[0].id)"><i class="fa-solid fa-list-check" style="font-size: 5em;"></i><p>Open your first list</p></button>
-                <button v-if="todoList.length" class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(todoList[todoList.length -1].id)"><i class="fa-regular fa-clock" style="font-size: 5em;"></i><p>Open your most recent list</p></button>
-              </div> 
-              <div class="row align-items-center justify-content-center">
-                <button  class="p-1 m-1 rounded-2 w-25 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-plus" style="font-size: 5em;"></i><p>Create a new Todo List!</p></button>
-                <a href="http://localhost:5000/" class="p-1 m-1 rounded-2 w-25 btn btn-light"><i class="fa-solid fa-right-from-bracket" style="font-size: 5em;"></i><p>Logout</p></a>
-              </div>         
+          <TodoListComponent v-else-if="showTodoView" :key="todoComponentKey" :list-title="listTitle" :list-users="listUsers" :list-items="listItems" :list-id="todoListId" @reload-todos="openTodoList" id="todoElement"/>
+          <div v-else class="box row d-flex align-items-center justify-content-center">              
+              <div class="align-items-center justify-content-center pb-1 mb-1">
+                <h2 class="p-2 m-2 text-wrap">Willkommen, {{ loggedInUser }}!</h2>
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                  <div v-if="todoList.length" class="col">
+                    <div class="card h-100">
+                      <button class="card-body rounded-2 btn btn-light" @click="openAdminView(todoList[0].id)"><i class="fa-solid fa-list-check start-icon"></i><p>Open your first list</p></button>
+                    </div>
+                  </div>
+                  <div v-if="todoList.length" class="col">
+                    <div class="card h-100">
+                      <button class="card-body rounded-2 btn btn-light" @click="openAdminView(todoList[todoList.length -1].id)"><i class="fa-regular fa-clock start-icon"></i><p>Open your most recent list</p></button>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100">
+                      <button  class=" rounded-2 btn btn-light" @click="openAdminView(null)"><i class="fa-solid fa-plus start-icon"></i><p>Create a new Todo List!</p></button>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100">
+                      <a href="http://localhost:5000/" class="rounded-2 btn btn-light"><i class="fa-solid fa-right-from-bracket start-icon"></i><p>Logout</p></a>
+                    </div>
+                  </div>
+              </div>              
             </div>         
           </div>
         </div>
@@ -212,5 +224,7 @@ ul {
   transition: all 0.3s ease 0s;
 }
 
-
+.start-icon{
+  font-size: 5em;
+}
 </style>
