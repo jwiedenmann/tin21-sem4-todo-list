@@ -3,7 +3,7 @@ using Pyco.Todo.Core.Authorization.Attributes;
 
 namespace Pyco.Todo.Controllers;
 
-[Authorize]
+[Authorize(true)]
 [Route("{controller}")]
 public class TodoController : Controller
 {
