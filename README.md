@@ -20,7 +20,7 @@ docker-compose up --build
 ```
 Hiermit wird die gesamte Anwendung mit allen Containern gestartet. Die Anwendung ist im Browser erreichbar, indem man `localhost` in die URL-Leiste eingibt.
 
-###Container
+### Container
 Nach dem der oben angeführte Build-Befehl ausgeführt wurde, können die Container mit Docker Desktop einzeln gestartet und gestoppt werden. Folgende Container können gestartet werden
 - nginx-reverse-proxy
 - mqtt-broker
@@ -37,11 +37,11 @@ gestoppt und eliminiert werden. Anschließend müssen die Container wieder wie i
 ###Debug Modus für Entwickler
 Für die Entwicklung muss der `app` Container gestoppt werden. Das Backend und Frontend werden dann getrennt voneinander gestartet:
 
-#####Backend
+##### Backend
 - Mit Visual Studio die Solution Datei `Pyco.Todo.sln` im Ordner `app/backend` öffnen
 - Programm im Debug Modus starten
 
-#####Frontend
+##### Frontend
 - ein Terminal im Ordner `app/frontend` öffnen
 - folgende Befehle nacheinander ausführen:
 ```
