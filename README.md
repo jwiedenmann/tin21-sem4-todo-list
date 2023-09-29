@@ -34,7 +34,7 @@ docker-compose down -v
 ```
 gestoppt und eliminiert werden. Anschließend müssen die Container wieder wie im Quickstart beschrieben gestartet werden.
 
-###Debug Modus für Entwickler
+### Debug Modus für Entwickler
 Für die Entwicklung muss der `app` Container gestoppt werden. Das Backend und Frontend werden dann getrennt voneinander gestartet:
 
 ##### Backend
