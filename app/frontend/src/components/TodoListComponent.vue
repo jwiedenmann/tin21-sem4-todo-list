@@ -99,6 +99,7 @@ client.on('message', function (topic, message) {
     console.log('im ServerACK')
     sentChanges.value = {}
     let messageObj = JSON.parse(message.toString())
+    Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).Content = editFieldContent.value
     if(messageObj.ListItemClientUpdate.UserId != parseInt(store.state.user.id)){
         //update from another user, apply changes
         applyChanges(Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId), messageObj.ListItemClientUpdate)
