@@ -6,7 +6,7 @@ import { todo_post } from '@/todoclient'
 import routes from '@/constants/todoroutes'
 import ListUserComponentVue from './ListUserComponent.vue'
 
-
+//Information about list passed by ListOverview.vue
 const props = defineProps({
     listTitle: {
         type: String,
@@ -17,7 +17,7 @@ const props = defineProps({
     newList: Boolean
 })
 
-
+//define refs
 let searchInput = ref('')
 const title = ref(props.listTitle)
 const users = ref([])
@@ -37,6 +37,7 @@ const state = reactive({
     modal_error: null,
 })
 
+//render list of shared users when opening the component
 onMounted(() => {
     state.modal_error = new Modal('#errorModal', {})
     console.log(users.value)
@@ -49,6 +50,7 @@ onMounted(() => {
     }
 })
 
+//functions to open and close Modal messages
 function openModal() {
     state.modal_error.show()
 }
@@ -61,6 +63,7 @@ function closeModal() {
     }
 }
 
+//executed after clicking the search button. Sets the searchUserResults value to the list of users returned by the backend
 async function searchUser(searchTerm) {
     //call UserController
     if (searchTerm) {
@@ -72,6 +75,7 @@ async function searchUser(searchTerm) {
     }
 }
 
+//check if user is already added and if not, add user to the shared users
 function addUser(user) {
     if (user.username && !users.value.some(u => u.Username === user.username)) {
         users.value.push({ Id: user.id, Username: user.username, ListUserRole: UserRoles["ListAdmin"] });
@@ -88,6 +92,7 @@ function removeUser(userId) {
     users.value = users.value.filter((u) => u.Id !== userId)
 }
 
+//submit function when creating a new list. Validate inputs and send a POST to the backend api
 async function createNewList() {
     let list = { Title: title.value, ListUsers: users.value }
     if (!list.Title) {
@@ -107,6 +112,7 @@ async function createNewList() {
     }
 }
 
+//submit function when updating an existing list. Validate inputs and send a PUT to the backend api
 async function updateList(){
     console.log('Time for an update')
     let list = { Id: props.listId, Title: title.value, ListUsers: users.value }
@@ -127,6 +133,7 @@ async function updateList(){
     }
 }
 
+//update Role ID for user in shared users
 function updateRole(userId, newRole) {
     console.log(userId)
     console.log(newRole)
