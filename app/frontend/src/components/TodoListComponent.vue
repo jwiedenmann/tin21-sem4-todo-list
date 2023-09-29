@@ -56,7 +56,7 @@ let connection = {
         // ws: 9001; mqtt: 1883
         port: 9001,
         endpoint: "/mqtt",
-        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
+
         clean: true,
         connectTimeout: 30 * 1000, // ms
         reconnectPeriod: 4000, // ms
@@ -71,14 +71,16 @@ const { protocol, host, port, endpoint, ...options } = connection;
 console.log(connectUrl)
 let client = mqtt.connect(connectUrl, options)
 //initialize clientStateInfos for operational transformations
-//let stateInfos = new clientStateInfos(0)
+
 client.on('connect', function () {
   // subscribe to a topic to receive message from it
+  //Subscribe to LIST_TOPIC to revieve a message when a user updates the list with a new item
   client.subscribe(topics.LIST_TOPIC + props.listId, function (err) {
     if (!err) {
       console.log('Connected and subscribed to topic: ' + topics.LIST_TOPIC + props.listId)
     }
   })
+  //Subscribe to server ACK to revieve messages needed for operational transformations
   client.subscribe(topics.SERVER_ACK, function(err){
     if (!err) {
       console.log('Connected and subscribed to topic: ' + topics.SERVER_ACK)
@@ -88,20 +90,23 @@ client.on('connect', function () {
   })
 })
 
-// What should happen if I recieve a message?
+// What should happen if a message is recieved?
 client.on('message', function (topic, message) {
   // message is Buffer
   console.log("Received:" + message.toString() + " from Topic: " + topic.toString())
   if(topic.toString() === topics.LIST_TOPIC + props.listId){
     console.log('Reload Todos')
+    //a new item was added or an existing item was updated; reload the todo items
     emit('reloadTodos', props.listId)
   }else if(topic.toString() === topics.SERVER_ACK){
+    //a user is editing a listitem of this list; keep the items up to date
     console.log('im ServerACK')
     sentChanges.value = {}
     let messageObj = JSON.parse(message.toString())
     if(editFieldContent.value && editedTaskIdinDB === messageObj.ListItemClientUpdate.ListItemId){
         Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId).Content = editFieldContent.value
     }
+    //check if changes were made by another user and if change has to be applied
     if(messageObj.ListItemClientUpdate.UserId != parseInt(store.state.user.id)){
         //update from another user, apply changes
         applyChanges(Tasks.value.find((el) => el.id == messageObj.ListItemClientUpdate.ListItemId), messageObj.ListItemClientUpdate)
@@ -120,6 +125,7 @@ client.on('message', function (topic, message) {
   //client.end()
 })
 
+//publish a clientUpdate to the CLIENT_UPDATE topic
 function doPublish(clientUpdate) {
     let publication = {
         topic: topics.CLIENT_UPDATE,
@@ -138,6 +144,7 @@ function doPublish(clientUpdate) {
   })
 }
 
+//get position and type of input after every input to the edit field
 function getCursor(event) {
     if(firstPos.value){
         startPosition.value = event.target.selectionStart
@@ -161,6 +168,7 @@ function getCursor(event) {
     console.log('Caret at: ', currentPosition.value)
 }
 
+//create a currentChange object and push it to the pedningChanges queue. If possible, publish message
 function sendUpdate(listItemId, lsr, isInsert, position, length, value){
     let userId = parseInt(store.state.user.id);
     let currentChange = {
@@ -188,6 +196,7 @@ function sendUpdate(listItemId, lsr, isInsert, position, length, value){
   insertedChars.value = []
 }
 
+//debounce sending the input changes from the edit field to the queue
 const debouncedHandler = debounce(event => {
   console.log('New document value:', event.target.value);
   changeLength.value = currentPosition.value - (startPosition.value - 1)
@@ -202,6 +211,7 @@ const debouncedHandler = debounce(event => {
   }
 }, 500);
 
+//apply the current version of the listItem with the updates from the server
 function applyChanges(listItem, serverUpdate){
     console.log('We apply it:', listItem)
     if(typeof listItem.Content === "undefined"){

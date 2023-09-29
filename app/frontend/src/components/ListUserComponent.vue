@@ -17,6 +17,7 @@ function updateRole() {
 </script>
 
 <template>
+    <!--Element in shared users list-->
     <span class="row list-group-item d-flex justify-content-between align-items-center listUserComponent">
         <i v-if="selected === '2'" class="fa-solid fa-user col-sm-1 role-icon"></i>
         <i v-else-if="selected === '1'" class="fa-solid fa-user-gear col-sm-1 role-icon"></i>
