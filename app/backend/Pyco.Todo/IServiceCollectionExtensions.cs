@@ -48,10 +48,12 @@ public static class IServiceCollectionExtensions
         services.AddMqttClientServiceWithConfig(aspOptionBuilder =>
         {
             aspOptionBuilder
-                .WithCredentials("user1", "1234")
+                .WithCredentials(
+                    configuration.GetValue<string>("Mqtt:Config:Username"),
+                    configuration.GetValue<string>("Mqtt:Config:Password"))
                 //.WithClientId(clientSettinigs.Id)
                 //.WithTcpServer(brokerHostSettings.Host, brokerHostSettings.Port)
-                .WithWebSocketServer(x => x.WithUri("ws://localhost:9001/mqtt"));
+                .WithWebSocketServer(x => x.WithUri(configuration.GetValue<string>("Mqtt:Config:Uri")));
         });
     }
 
