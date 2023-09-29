@@ -22,6 +22,12 @@ namespace Pyco.Todo.Pages
         public string FormResult { get; set; } = string.Empty;
         public void OnGet() { }
 
+        /// <summary>
+        /// OnPost is called if the user hits the submit button
+        /// </summary>
+        /// <param name="userNameOrEmail">Username or useremail</param>
+        /// <param name="password">Password of the user</param>
+        /// <returns>Returns actionresult</returns>
         public async Task<IActionResult> OnPost([FromForm] string userNameOrEmail, [FromForm] string password)
         {
             string baseAddress = _configuration.GetValue<string>("TodoApi:BaseAddress");
